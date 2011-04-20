@@ -1,0 +1,1078 @@
+\documentclass[graybox]{sty/svmult}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{url}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{graphicx}
+\usepackage{mathptmx}
+\usepackage{helvet}  
+\usepackage{courier} 
+\usepackage{type1cm} 
+\usepackage{makeidx} 
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{subfigure}
+\usepackage{epsfig}
+%\usepackage[bottom]{footmisc}
+
+% see the list of further useful packages
+% in the Reference Guide
+%
+
+\makeindex             % used for the subject index
+                       % please use the style svind.ist with
+                       % your makeindex program
+
+
+\begin{document}
+\title*{Characterizing Fault-tolerance in Evolutionary Algorithms}
+
+\author{Daniel Lombraña González, Juan Luis Jiménez Laredo , Francisco Fernández de Vega and Juan Julián Merelo Guervós}
+
+\institute{D . Lombraña \at Citizen Cyberscience Centre\\
+\email{teleyinex@gmail.com}
+%
+\and J.L.J. Laredo and J.J. Merelo \at University of Granada.\\ \email{{juanlu,jmerelo}@geneura.ugr.es}
+%
+\and F. Fernández de Vega \at Centro Universitario de M\'{e}rida, Universidad de Extremadura.\\
+Sta. Teresa Jornet, 38. 06800 M\'{e}rida (Badajoz), Spain. \email{fcofdez@unex.es}}
+
+
+\maketitle
+\abstract*{This chapter presents a study of the fault-tolerant nature of some of the best known Evolutionary Algorithms, namely Genetic Algorithms (GAs) and Genetic Programming (GP), on
+a real-world Desktop Grid System.  We study the situation when no fault-tolerance mechanisms is employed. 
+The results show that when parallel GAs and GPs are run on non-reliable distributed infrastructures -thus suffering degradation of available hardware- they can achieve results of a similar quality when compared with a failure-free platform in three of the six scenarios under study. Additionally, we show that increasing the initial population size is a successful method to provide resilience to system failures in five of the scenarios. Such results suggest that Parallel GAs and GPs are inherently and naturally fault-tolerant.}
+
+\section{Introduction}
+
+Genetic Algorithms (GAs) and Genetic Programming (GP) are well known representatives of Evolutionary Algorithms (EAs), frequently used to solve optimization 
+problems. In both cases, when the problem faced is complex, GAs and GP require a large amount of computing resources.
+The more complex the problem, the larger the computing requirements. This fact leads to a sometimes prohibitively long time to solution that happens, for example, when tackling real-world problems. In order to reduce the execution time of EAs, researchers have applied parallel and distributed programming during the last decades. 
+
+There are two main advantages when exploiting the inherent parallelism of EAs: (i) the computing load is distributed among different processors, therefore speeding-up the
+execution time, and (ii) the structural changes applied to the algorithm when deployed in parallel, which allow them to outperform the sequential counterpart 
+(see for instance \cite{spatially-structured-EAs}).
+
+Parallel algorithms, and thus parallel GAs and GP, must be run on platforms that consists of multiple computing elements or \emph{processors}. Although supercomputers can be employed, usually comodity clusters and distributed systems are used instead, due to both good performance and cheaper prices.  One of the most popular distributed systems nowadays are the  Desktop Grid Systems (DGSs). 
+The term ``desktop grid'' is used to refer to distributed networks of
+heterogeneous single systems that contribute idle processor cycles for computing. 
+
+Perhaps the most well known desktop grid system is the Berkeley Open Infrastructure for Network Computing (BOINC) \cite{boinc-paper}, 
+which supports among other projects the successful Einstein@Home \cite{einsteinathome-2} . DGSs are also known as \emph{volunteer grids} because they
+aggregate the computing resources (commodity computers from offices or homes) that volunteers worldwide willingly donate to different research 
+projects (such as Einstein@Home). 
+
+One of the most important features of DGSs is that they provide large-scale parallel computing capabilities, only for specific
+types of applications --bag of tasks mainly--, at a very low cost. Therefore DGSs can provide parallel computing capabilities for running demanding parallel applications, which is frequently the case for EAs (PEAs).  A good example of the combination of PEAs and DGSs is the MilkyWay@Home project \cite{milkywayathome}. 
+
+%%%% Aquí cambiamos el tercio.  
+
+But with large scale comes a higher 
+likelihood that processors suffer a failure \cite{largescale_failures}, interrupting the execution of the algorithm or crashing the whole system (in this 
+chapter we use the term ``failure'' and do not make the subtle distinction between ``failure'' and ``fault'', which
+is not necessary for our purpose).
+
+In DGSs, computers join the system, contribute some resources 
+and leave it afterwards causing a collective effect known as churn \cite{Stutzbach06Understanding}.
+Churn is an inherent property of DGSs and has to be taken into 
+account in the design of applications, as these interruptions (computer powered off, busy CPU, etc.) are interpreted by the application as a failure.   
+
+To cope with failures, researchers have studied and developed different mechanisms to circumvent the failures or restore the
+system once a failure occurs. These techniques are known as \emph{Fault-Tolerance mechanisms} and enforce that an
+application behave in a well-defined manner when a failure occurs \cite{fault-tolerant-async}.
+Nevertheless, to the best of our knowledge, not many efforts have been applied to study the fault
+tolerance features of PEAs in general, and of PGAs and PGP in particular. 
+
+In previous works \cite{cec-2007,gecco-2007-island-model} we firstly analyzed the fault-tolerance nature of Parallel Genetic
+Programming (PGP) under several simplified assumptions. These initial results suggested that PGP exhibits a fault-tolerant behavior by
+default, encouraging to go a step further and run PGP on large-scale computing infrastructures that are subject to failures
+without requiring the employment of any fault-tolerance mechanism. This work was lately improved \cite{bads-2009, jfgcs-2010,
+evocop-2010} by studying the fault-tolerance
+nature of PGP and PGAs using real data from one of the most high churn
+distributed systems: the Desktop Grids. The results again showed that PGP and PGAs can cope
+with failures without using any fault-tolerance mechanism, concluding
+that PGP and PGAs are fault tolerant by nature since it implements by default
+the fault-tolerance mechanism called \emph{graceful degradation}
+\cite{distributed-systems}. 
+
+This chapter is a summary of the obtained results for PGAs and PGP, presenting the study of fault-tolerance in PGAs and PGP
+in order to know if it is feasible to run them in parallel or distributed systems, without having to implement any fault-tolerance mechanism. 
+To this aim, we have chosen a fine-grained master-worker model of parallelization \cite{spatially-structured-EAs}. A server, ``the master'', runs the
+main algorithm and hosts the whole population. The server is in charge of sending non-evaluated individuals to workers in
+order to obtain the fitness value of them. This approach is effective because one of the most time-consuming steps of GAs or
+GP is the evaluation --fitness computation-- phase. The master waits until all individuals in generation $n$ are evaluated before
+going to the next generation $n+1$ and run the genetic operations. 
+
+We assume that the system only suffers from omission failures \cite{distributed-systems}: 
+\begin{itemize}
+    \item the master sends $N$ individuals with $N>0$ to a worker, and the worker never receives them,
+e.g., due to network transmission problems; or
+    \item the master sends $N$ individuals with $N>0$ to a worker, the worker receives them but never
+returns them. This can occur because the worker crashes or the returned individuals are lost during the transmission.
+\end{itemize}   
+
+In order to study the behavior of PGAs and PGP under the previous assumptions, we are going to simulate the failures using 
+real-world traces of host availability from three DGSs. We have chosen Desktop Grid availability data because these systems
+exhibit large amounts of failures, and thus if it is possible to run inside them PGAs or PGP without using any fault-tolerance
+mechanism, PGAs and PGP will be able to exploit any parallel or distributed systems to its maximums.
+
+The rest of the chapter is organized as follows. Section~\ref{related-work} reviews related
+work; 
+section~\ref{experiments-setup} presents the setup of the different
+scenarios and experiments; 
+section~\ref{experiments-results} shows the obtained results and their
+analysis; and, finally, section~\ref{conclusions} concludes the paper with a discussion of the results and future directions.
+
+\section{Background and related work}
+\label{related-work}
+
+When using EAs to solve real-world problems researchers and practitioners often face prohibitively
+long times-to-solution on a single computer.  For instance,
+Trujillo \emph{et al.}~required more than 24 hours to solve a computer
+vision problem~\cite{ipgp2}, and times-to-solution can be
+much longer, measured in weeks or even months. Consequently,
+several researchers have studied the application of parallel
+computing to Spatially Structured EAs in order to shorten
+times-to-solution~\cite{Fernandez:PGP, spatially-structured-EAs, parallel-ga-survey}.
+Such PEAs have been used for decades, for instance, on the Transputer
+platform~\cite{transputer}, or, more recently, via software frameworks
+such as Beagle~\cite{master-slave-framework-beagle}, grid based tools
+like Paradiseo~\cite{grid-parallel-bioinspired-algorithms}, or BOINC-based EA frameworks for
+execution on DGSs ~\cite{vmware-boinc-ipgp}.
+
+Failures in a distributed system can be local, affecting only a single processor, or they can be
+communication failures, affecting a large number of participating
+processors.  Such failures can disrupt a running application,
+for instance mandating that the application be restarted from scratch.  
+As distributed computing platforms become larger
+and/or lower-cost through the use of less reliable or non-dedicated hardware, 
+failures occur with higher probability~\cite{hardware-failures,hardware-reliability-cost,hardware-reliability}. Failures are, in fact, the common case in
+DGSs.  For this reason, fault-tolerant techniques are necessary so that
+parallel applications in general, and in our case PEAs, can benefit
+from large-scale distributed computing platforms.  Failures can
+be alleviated, and in some cases completely circumvented, using
+techniques such as checkpointing~\cite{biblia-checkpointing},
+redundancy~\cite{primary_backup}, long-term-memory 
+\cite{epidemic-algorithms-fault-tolerance-dream}, specific solutions
+to message-passing~\cite{starfish-fault-tolerant} or rejuvenation
+frameworks~\cite{rejuvenation}. 
+It is necessary to embed the techniques in the application and the
+algorithms. While some of these techniques may be straightforward to
+implement (e.g., failure detection and restart from scratch), the more
+involved ones typically lead to an increase in software complexity.  Regardless,
+fault tolerance techniques always requires extra computing
+resources and/or time.
+
+Currently available PEA frameworks employ fault tolerant mechanisms to tolerate failures in distributed systems like in DGSs.
+For instance ECJ~\cite{ecj}, ParadisEO~\cite{paradiseo}, DREAM~\cite{dream} or Distributed Beagle
+\cite{master-slave-framework-beagle}. These frameworks have distinct features (programming language, parallelism models,
+etc.) that may be considered in combination with DGSs, and provide different techniques to cope with failures:
+\begin{itemize}
+    \item ECJ~\cite{ecj} is a Java framework that employs a master-worker scheme to run PEAs using TCP/IP sockets. When a remote
+        worker fails, ECJ handles this failure by rescheduling and restarting the computation to another available worker. 
+    \item ParadisEO~\cite{paradiseo} is a C++ framework for running a master-worker model using MPI~\cite{mpi}, PVM~\cite{pvm}, or POSIX threads. Initially, ParadisEO did not provide any fault-tolerance.
+        The developers later implemented a new version on top of the Condor-PVM 
+        resource manager~\cite{condor-pvm} in order to provide a checkpointing feature~\cite{biblia-checkpointing}.
+        This framework, however, is not the best choice for DGSs because these systems are: (i)~loosely coupled 
+        and (ii)~workers may be behind proxies, firewalls, etc. making it difficult to deploy a ParadisEO system. 
+    \item DREAM~\cite{dream} is a Java peer-to-peer (P2P) framework for PEAs that provides a
+        fault-tolerance mechanism called \emph{long-term-memory}~\cite{epidemic-algorithms-fault-tolerance-dream}. This
+        framework is designed specifically for P2P systems. As a result, it cannot be compared directly 
+        with our work since we focus on a master-worker architecture on DGSs. 
+    \item  Distributed BEAGLE~\cite{master-slave-framework-beagle} is a C++ framework that implements the
+         master-worker model using TCP/IP sockets as ECJ. Fault-tolerance is provided via a simple time-out
+         mechanism: a computation is re-sent to one or more new available workers if
+         this computation has not been completed by its assigned worker after a specified deadline.
+\end{itemize}
+\noindent
+While these PEA frameworks provide fault-tolerant features, the relationship between
+fault tolerance and specific features of PEAs has not been studied.
+
+So far, EA researchers have not employed massively DGSs. Nevertheless, there are several projects using DGSs like 
+the MilkyWay@Home project \cite{milkywayathome} which uses GAs to create an accurate 3D model of the Milky way, a ported version 
+of LilGP \cite{maeb-2007-boinc}(a framework for GP \cite{lilgp}) to one of the most employed DGSs, BOINC
+\cite{boinc-paper}, or the \emph{custom execution environment} facility proposed and implemented by Lombraña et. al. \cite{ibergrid-2008,pdp-2009} 
+for BOINC.
+
+Other EA researchers have focused their attention on P2P systems \cite{juanlu-ppsn}, which are very similar to DGSs because
+the computing elements are also desktop computers in its majority. However these systems are different because there is not a
+central server as in DGSs.
+
+In all the described proposals --to the best of our knowledge-- none of them have specifically
+addressed the problem of failures within PGAs or PGP. Nevertheless, some of those solutions internally employ some fault-tolerance
+mechanisms. In this sense, only Laredo et al. have analyze the resilience to failures of a parallel Genetic Algorithm 
+in \cite{laredo08:churn}, following the Weibull degradation of a P2P system (failures are the host-churn behavior of these
+systems as well as DGSs) proposed by Stutzbach and Rejaie in \cite{Stutzbach06Understanding}. 
+Therefore, PGAs or PGP have not been analyzed before under real host availability traces
+(a.k.a. host-churn). Hence, this paper assesses fault tolerance in PGAs and PGP using host-churn data collected in
+three real-world DGSs \cite{traces-dgc}.
+Therefore, the key contribution is the fully characterization of PGAs and PGP from the point of view of fault-tolerance with the
+aim of studying if PGAs can be run in parallel or distributed systems without using any fault-tolerance mechanism. 
+
+\section{Fault Tolerance}
+\label{faulttolerance}
+
+\subsection{Failure Models}
+
+\emph{Fault tolerance} can be defined as the ability of a system to behave in a
+well-defined manner once a failure occurs. In this paper we only take
+into account failures at the process level. A complete description of
+failures in distributed systems is beyond the scope of our discussion.
+According to Ghosh~\cite{distributed-systems}, failures can be classified
+as follows: crash, omission, transient, Byzantine, software, temporal,
+or security failures.
+However, in practice, any system may experience a failure due to the following
+reasons~\cite{distributed-systems}: (i) \emph{Transient failures}: the
+system state can be corrupted in an unpredictable way; (ii) \emph{Topology
+changes}: the system topology changes at runtime when a host crashes,
+or a new host is added; and (iii) \emph{Environmental changes}: the
+environment -- external variables that should only be read -- may change
+without notice.  Once a failure has occurred, a mechanism
+is required to bring back the system into a valid state. There
+are four major types of such fault tolerance mechanisms: masking tolerance,
+non-masking tolerance, fail-safe tolerance, and graceful
+degradation~\cite{distributed-systems}.
+
+To discuss fault-tolerance in the context of PEAs, we
+first need to specify the way in which the GP or GA application is
+parallelized.  Parallelism has been traditionally applied to
+GP and GAs at two possible levels: the individual level or the population
+level~\cite{spatially-structured-EAs,parallel-ga-survey,modelo-islas2,parallel-eas}.
+At the individual level, it is common to use a master-worker scheme,
+while at the population level, a.k.a. the ``island model'', different
+schemes can be employed (ring, multi-dimensional grids, etc.).
+
+In light of previous studies~\cite{spatially-structured-EAs,modelo-islas2}
+and taking into account the specific parallel features
+of DGSs~\cite{dgc-caracteristicas,traces-dgc}, we focus on
+parallelization at the individual level. Indeed, DGSs are
+loosely-coupled platforms with volatile resources, and therefore
+ideally suited to and widely used for embarrassingly parallel
+master-worker applications. Furthermore parallelization at the
+individual level is popular in practice because it is easy to
+implement and does not require any modification of the evolutionary
+algorithm~\cite{parallel-ga-survey,modelo-islas2,parallel-eas}.
+
+The server, or ``master'', is in charge of running the main algorithm and
+manages the whole population. It sends non evaluated individuals to
+different processes, the ``workers,'' that are running on hosts
+in the distributed system. This
+model is effective as the most expensive and time-consuming operation
+of the application is typically the individual evaluation phase.
+The master waits until all individuals in generation $n$ are evaluated
+before generating individuals for generation $n+1$. In this scenario,
+the following failures may occur:
+\begin{itemize}
+    \item \emph{A crash failure --} The master crashes and the
+    whole execution fails. This is the worst case.  
+    \item \emph{An omission failure --} One or more workers do not receive the individuals to be
+    evaluated, or the master does not receive the evaluated individuals.
+    \item \emph{A transient failure --} A power surge or lighting affects
+    the master or worker program, stopping or affecting the execution.
+    \item \emph{A software failure --} The code has a bug and the execution
+    is stopped either on the master or on the worker(s).
+\end{itemize} 
+
+We make the following assumptions: (i)~we consider all the possible
+failures that can occur during the transmission and reception of
+individuals between the master and each worker, but we assume that all
+software is bug-free and that there are no transient failures; (ii)~the
+master is always in a safe state and there is no need for master
+fault tolerance (unlike for the workers, which are untrusted computing
+processes).  This second assumption is justified because the master is under
+a single organization/person's control, and, besides, known fault
+tolerance techniques (e.g., primary backup~\cite{primary_backup}) could
+easily be used to tolerate master failures.
+
+Our system only suffers from omission failures: (i)~the master
+sends $N>0$ individuals to a worker, and the worker never receives them
+(e.g., due to network transmission problems); or (ii)~the master sends
+$N>0$ individuals to a worker, the worker receives them but never returns
+them (e.g., due to a worker crash or to network transmission problems).
+
+\subsection{Fault-Tolerant and Non-Fault-Tolerant Strategies}
+\label{strategies}
+
+Since our objective in this work is to study the implicit fault-tolerant 
+nature of the PEA paradigm, we need to perform comparison with the use
+of a reasonable and explicit fault-tolerant strategy.  
+In the master-worker scheme, four typical approaches can be applied
+to cope with failures:
+\begin{enumerate}
+    \item Restart the computation from scratch on another host after a failure.
+    \item Checkpoint locally (with some overhead) and restart the computation on 
+          the same host from the latest checkpoint after a failure.
+    \item Checkpoint on a checkpointing server (with more overhead) and move to another host after a failure, restarting the computation
+        from the last checkpoint.
+    \item Use task replication by sending the same individual to two or more hosts, each of them performing either 1, 2, or perhaps even 3 above. The hope is that one of
+         the replicas will finish early, possibly without any failure. 
+\end{enumerate}
+
+Based on the analysis in Section~\ref{related-work} of existing PEA
+frameworks that are relevant in the context of DGSs, namely ECJ and
+Distributed Beagle, the common technique to cope with failures is the
+first one: re-send lost individuals after detecting the failure. The
+advantage of this technique is that it is low overhead, very simple to
+implement, and reasonably effective. More specifically, its modus-operandi
+is as follows:
+
+\begin{enumerate}
+    \item After assigning individuals to workers, the master waits at most $T$ time-units per 
+          generation. If all individuals have been computed by workers before $T$ time-units have elapsed, then the master computes fitness values, updates the
+          population, and proceeds with the next generation. 
+    \item If after $T$ time-units some individuals have not been evaluated, then the master
+          assumes that workers have failed or are simply so slow that they may not
+          be useful to the application. In this case: 
+          \begin{enumerate}
+             \item individuals that have not been evaluated are resent for evaluation 
+                   to available workers, and the master waits for another $T$ time-units
+                   for these individuals to be evaluated.
+             \item If there are not enough available workers to evaluate all unevaluated
+                   individuals, then the master proceeds in multiple phases of duration $T$. For
+                   instance, if after the initial period of $T$ time-units there remain 5 unevaluated
+                   individuals and there remain only 2 available workers, the master will
+                   use $\lceil \frac{5}{2} \rceil = 3$ phases (assuming that all future individual
+                   evaluations are successful).
+        \end{enumerate}
+\end{enumerate}
+
+This method provides a simple fault-tolerant mechanism
+for handling worker failures as well as slow workers,
+which is a common problem in DGSs due to high levels of host
+heterogeneity~\cite{boinc-paper,distributed-systems,boinc-power}. For the sake of
+simplicity, we make the assumption that individuals that are lost and resent
+for evaluation to new workers are always evaluated successfully. This
+is unrealistic since future failures could lead to many phases of
+resends. However, this assumption represents a best-case scenario for
+the fault-tolerant strategy.  The difference between the failure-free and
+the failure-prone case is the extra time due to resending individuals.
+In the failure-free case, with $G$ generations, the execution time
+should be $T_{execution time}=G\times T$, while in a failure-prone case
+it will be higher. 
+
+By contrast with this fault-tolerant mechanism, we
+propose a simple non-fault-tolerant approach that consists in ignoring lost
+individuals, considering their loss just a kind of dynamic population
+feature~\cite{dynamic-population-gp,plague,luke:2003:gecco,dynamic-population-variation-gp}.
+% TODO: Add some dynamic population GA references.
+In this approach the master does not attempt to detect failures and
+no fault tolerance technique is used. The master waits a time $T$ per
+generation, and proceeds to the next generation with the available individuals at that time,
+likely losing individuals at each generation. The hope is that the
+loss of individuals is not (significantly) detrimental to the achieved,
+while the overhead of resending
+lost individuals for recomputation is not incurred.
+
+\section{Experimental methodology}
+\label{experiments-setup}
+
+All the experiments presented in this chapter are based on simulations. Simulations allows us to perform a statistically
+significant number of experiments in a wide range of realistic scenarios. Furthermore, our experiments are repeatable, via
+``replying'' host availability trace data collected from real-world DG platforms \cite{traces-dgc}, so that fair comparison
+between simulated application execution is possible.
+
+\subsection{Application and failure model}
+
+We perform experiments for one GA and one GP well-known problems. The GP problem is the even parity 5 (EP5) problem, which
+tries to build a program capable of calculating the parity of a set of 5 bits. For the GA problem we used the 3-trap instance
+\cite{ackley:trap}, which is a piecewise-linear function defined on unitation (the number of ones in a binary string).
+
+Two kind of experiments are carried out:
+\begin{enumerate}
+    \item for the failure-free case (i.e. assuming no worker failures occur)
+    \item replying and simulating failure traces from real-world DGSs.
+\end{enumerate}
+
+In the failure free case the available computing power is kept steady throughput execution, while in the other cases it
+varies among generations.
+
+The simulation of host availability in the DG is performed based
+on three real-world traces of host availability that were measured
+and reported in~\cite{traces-dgc}: \emph{ucb}, \emph{entrfin}, and
+\emph{xwtr}. These traces are time-stamped observations of the host
+availability in three DGSs.  The \emph{ucb} trace was collected for 85
+hosts in a graduate student lab in the EE/CS Department at UC Berkeley
+for about 1.5 months. The \emph{entrfin} trace was collected for 275 hosts
+at the San Diego Supercomputer Center for about 1 month. The \emph{xwtr}
+trace was collected for 100 hosts at the Universit\'e Paris-Sud for
+about 1 month. See~\cite{traces-dgc} for full details on the measurement
+methods and the traces, and Tab.~\ref{tab:traces-summary} for a summary of its main features.
+
+\begin{table}[h]
+    \center
+    \caption{\label{tab:traces-summary}Features of Desktop Grid Traces}
+    %\begin{scriptsize}
+    \begin{tabular}{|l|c|c|l|}
+        \hline
+        Trace & Hosts & Time in months & Place\\
+        \hline
+        \emph{entrfin} & 275 & 1 & SD Supercomputer Center \\
+        \hline
+        \emph{ucb} & 85 & 1.5  & UC Berkeley\\
+        \hline
+        \emph{xwtr} & 100 & 1 & Universit\'e Paris-Sud\\
+        \hline
+    \end{tabular}
+%\end{scriptsize}
+\end{table}
+
+Figure~\ref{fig:trazas2} shows example availability data from the \emph{ucb}
+trace: the number of available hosts in the platform versus time over 24
+hours. The figure shows the typical churn phenomenon, with available hosts
+becoming unavailable and later becoming available again.  We performed
+our experiments over such 24-hour segments of our availability traces.
+
+We use two different scenarios when simulating host failures based
+on trace data. In the first scenario a stringent assumption is used: hosts
+that become unavailable never become available again. An example
+of the number of hosts throughout time for this scenario is shown in
+Figure~\ref{fig:trazas2}, as the curve ``trace without return.''  For this
+scenario, we arbitrarily select the time within each 24-hour segment with
+the largest number of available hosts as the beginning of application
+execution.  In the second scenario hosts can become available again after a
+failure and
+reused by the application. This phenomenon is called ``churn,'' and 
+is typical of what is implemented in real-world DG systems. For
+this scenario, application execution starts at an arbitrary time in
+the segment.  Note that in the first ``no churn scenario,'' population
+size (i.e., the number of individuals) becomes progressively smaller as the
+application makes progress, while population size may fluctuates in the
+``churn scenario.''
+
+\begin{figure}
+    \begin{center}
+        \epsfig{figure=img/traza-ucb-1994-02-28.ps, angle=-90, width=\linewidth}
+    \end{center}
+    \caption{\label{fig:trazas2}Host availability for 1 day of the \emph{ucb} trace.}
+\end{figure}
+
+\section{Distribution of Individuals to Workers}
+\label{distribution-individuals}
+
+At the onset of each generation the master sends as equal as possible
+numbers of individuals to each worker.  This is because the master assumes
+homogeneous workers and thus strives for perfect load-balancing. We call
+this number $I$. Thus, if a worker does not return individual evaluations
+before time $T$, then those $I$ individuals are considered lost. In the
+fault-tolerant approach in Section~\ref{strategies}, such individuals
+are simply resent to other workers. In our non-fault-tolerant approach,
+these individuals are simply lost and do not participate in the
+subsequent generations. 
+
+Note that for our non-fault-tolerant approach the execution time per
+generation in the failure-free and the failure-prone case are
+identical: with $P$ individuals to be evaluated at a given generation
+and $W$ workers, the master sends $I=P/W$ individuals to
+each worker.  When a worker fails $I$ individuals are lost.  Given
+that these individuals are discarded for the next generation and that the
+initial population size is never exceeded by new extra individuals,
+the remaining workers will continue evaluating $I$ individuals each,
+regardless of the number of failures or newly available hosts.
+
+Regardless of the approach in use, if there is host churn then population
+size can be increased throughout application execution due to newly
+available hosts. We impose the restriction that the master never overcomes
+the specified population size. This may leave some workers idle in case 
+a large number of workers become available. In this case, it would be 
+interesting to re-adjust the number $I$ of individuals sent to each worker 
+so as to utilize all the available workers. We leave such load-balancing 
+study outside the scope of this work and maintain $I$ constant.
+
+In the churn scenario, one important question is: what work is assigned
+to newly available workers? When a new worker appears, the master
+simply creates $I$ new random individuals and increases the population
+size accordingly (provided it remains below the initial population size). 
+These new individuals are sent to the new worker. Note that when there are 
+no available workers at all, the master loses all its individuals except the 
+best one thanks to the elitism parameter. Then, the master proceeds to the 
+next generation by waiting the specified time  $T$ for newly available workers.
+
+\begin{figure}
+    \begin{center}
+        \epsfig{figure=img/population_length-est.ps, angle=-90, width=\linewidth}
+    \end{center}
+    \caption{\label{fig:population-length}Population size vs. generation.}
+\end{figure}
+
+\subsection{Experimental Procedure}
+\label{experiments-results}
+
+We have performed a statistical analysis of our results based
+on 100 trials for each experiment, accounting for the fact that
+different individuals can be lost depending on which individuals were
+assigned to which hosts.  We have analyzed the normality
+of the results using the Kolgomorov-Smirnov and Shapiro-Wilk tests,
+finding out that all results are non-normal. Therefore, to compare two
+samples, the failure-free case with each trace (with and without churn),
+we used the Wilcoxon test. Table~\ref{tab:parity5-day1-day2-wilcoxon}
+and~\ref{tab:mul11-day1-day2-wilcoxon} present the Wilcoxon analysis of
+the data. The following sections discuss these results in detail.
+
+\section{Experimental results}
+
+\subsection{GP: Even Parity 5}
+
+For the GP problem, fitness is measured as the error in the obtained solution, with zero meaning that a perfect solution has
+been found. All the GP parameters, including population sizes, are
+Koza-I/II standard~\cite{koza:book}.  See Table~\ref{tab:gp-parameters}
+for all details.
+
+\begin{table}
+    \caption{Parameters of selected problems.}
+    \begin{center}
+        %\begin{scriptsize}
+\begin{tabular}{|l|c|}         
+        \cline{2-2}
+        \multicolumn{1}{c|}{} & EP5 \\
+        \hline Population & 4000 \\
+        \hline Generations & 51  \\
+        \hline Elitism & Yes \\         
+        \hline Crossover Probability & 0.90 \\         
+        \hline Reproduction Probability & 0.10 \\
+        \hline Selection: Tournament & 7 \\
+        \hline Max Depth in Cross & 17 \\
+        \hline Max Depth in Mutation & 17 \\
+        \hline ADFs & Yes \\
+        \hline     
+    \end{tabular} 
+%\end{scriptsize}
+\end{center}
+\label{tab:gp-parameters} 
+\end{table}
+
+Even if the required time for fitness evaluation for
+the problems at hand is short, we simulate larger evaluation times
+representative of difficult real-world problems (so that 51 generations,
+the maximum, correspond to approximately 5 hours of computation in a
+platform without any failures).
+
+\subsubsection{EP5: Results without churn}
+
+In this section we consider the scenario in which hosts never become
+available again (no churn). Figure~\ref{fig:population-length} shows the evolution
+of the number of individuals in each generation for the EP5 problem when simulated over two 24-hour periods, denoted by \emph{Day
+1} and \emph{Day 2}, randomly selected out of each of three of our traces, \emph{entrfin}, \emph{ucb}, and \emph{xwtr}, for
+a total of 6 experiments.
+
+Table~\ref{tab:fitness} shows a summary of the obtained fitness for the EP5 problems and of the fraction of lost individuals
+by the end of application execution.  The first row of the table shows
+fitness values assuming a failure-free case.  The fraction of lost
+individuals depends strongly on the trace and on the day. For instance,
+the \emph{Day 1} period of the \emph{entrfin} trace exhibits on its
+10 first generations a severe loss of individuals (almost half); the
+\emph{ucb} trace on its \emph{Day 2} period loses almost the entire
+population after 25 generations (96.15\% loss); and the \emph{xwtr}
+exhibits more moderate losses, with overall 23.52\% and 12.08\% loss
+after 51 generations for \emph{Day 1} and \emph{Day 2}, respectively.
+
+\begin{table}[h]
+    \caption{Obtained fitness for EP5}
+\begin{center}
+    %\begin{scriptsize}
+    \begin{tabular}{|c|c|c|}
+        \cline{3-3}
+        \multicolumn{2}{c|}{} & EP5 \\
+        \hline Trace & Loss(\%) & Fitness \\             
+        \hline Error free & 0.00 & 2.56  \\            
+        \hline \emph{entrfin} (\emph{\emph{Day 1}}) & 48.02 & 3.58 \\
+        \hline \emph{entrfin} (\emph{Day 2}) & 13.04 & 2.44 \\
+        \hline \emph{ucb} (\emph{\emph{Day 1}}) & 68.00 & 3.98 \\
+        \hline \emph{ucb} (\emph{Day 2}) & 96.15 & 5.13 \\
+        \hline \emph{xwtr} (\emph{\emph{Day 1}}) & 23.52 & 2.78 \\           
+        \hline \emph{xwtr} (\emph{Day 2}) & 12.08 & 2.61 \\           
+        \hline     
+\end{tabular}     
+%\end{scriptsize}
+\end{center}
+\label{tab:fitness}
+\end{table}
+
+The obtained fitness in the failure-free case is 2.56, and
+it ranges from 2.44 to 5.13 for the failure-prone cases (see
+Table~\ref{tab:parity5-day1-day2-wilcoxon} for statistical significance of
+results).  The quality of the fitness depends on host losses in each
+trace. The \emph{entrfin} and \emph{ucb} traces present the most severe
+losses. The \emph{ucb}
+trace exhibits 68\% losses for \emph{Day 1} and 96.15\% for \emph{Day
+2}. Therefore, the obtained fitness in these two cases are the worst
+ones relatively to the failure-free fitness.  The \emph{entrfin} trace
+exhibits 48.02\% and 13.04\% host losses for \emph{Day 1} and \emph{Day 2},
+respectively. As with the previous trace, when losses are too high, as
+in \emph{Day 1}, the quality of the solution is significantly worse than
+that in the failure-free case; when losses are lower, as in \emph{Day 2},
+the obtained fitness is not significantly far from the failure-free case.
+Similarly, the \emph{xwtr} trace with losses under 25\% leads to a
+fitness that it is not significantly different from the failure-free case.
+
+We conclude that, for the EP5 problem, it is possible to tolerate
+a gradual loss of up to 25\% of the individuals without sacrificing
+solution quality. This is the case without using any fault tolerance
+technique.  However, if the loss of individuals is too
+large, above 50\%, then solution quality is significantly diminished.
+Since real-world DGSs do exhibit such high failure rates when
+running PGP applications, we attempt to remedy this problem. Our simple
+idea is to increase the initial population size (in our case by 10,
+20, 30, 40, or 50\%). The goal is to compensate for lost individuals by
+starting with a larger population.
+
+Increasing population likely also affects the fitness in the failure-free
+case.  We simulated the EP5 problem in the failure-free case with a
+population size increased by 10, 20, 30, 40 and 50\%. Results are shown
+in Figure~\ref{fig:ep5-11m-fitness-effort}(a), which plots the evolution
+of fitness versus the ``computing effort.'' The computing effort is
+defined as the total number of evaluated individuals nodes so far (we must bear in mind that GP individuals are variable size
+trees), i.e., from
+generation 1 to generation $G$, as described in~\cite{plague}.  We have
+fixed a maximum computing effort which corresponds to 51 generations
+and the population size introduced by Koza~\cite{koza:book}, which is
+employed in this work. Figure~\ref{fig:ep5-11m-fitness-effort}(a) shows
+that population sizes $M>4,000$ for a similar effort obtain worse
+fitness values when compared with the original $M=4,000$ population size. Thus, for static populations,
+increasing the population size is not a good option, provided a judicious
+population size is chosen to begin with. Nevertheless, we content that
+such population increase could be effective in a failure-prone case.
+
+\begin{table}[h]
+    \caption{EP5 fitness with increased population}
+\begin{center}
+    %\begin{scriptsize}
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline
+        \multicolumn{7}{|c|}{Error Free fitness = 2.56} \\
+        \hline
+        \hline Traces  & \emph{entrfin} & \emph{ucb} & \emph{xwtr} & \emph{entrfin} & \emph{ucb} & \emph{xwtr}\\
+        \hline +0\%    & 3.58 & 3.98 & 2.78 &  2.44 & 5.13 & 2.61   \\
+        \hline +10\%   & 3.52 & 3.75 & 2.40 &  2.65 & 5.21 & 2.66   \\
+        \hline +20\%   & 3.01 & 3.61 & 2.32 &  2.29 & 4.68 & 2.42   \\ 
+        \hline +30\%   & 3.13 & 3.33 & 2.46 &  2.36 & 4.50 & 2.33   \\
+        \hline +40\%   & 2.80 & 3.35 & 2.15 &  2.01 & 4.71 & 1.96   \\ 
+        \hline +50\%   & 2.85 & 3.17 & 2.13 &  1.92 & 4.47 & 2.24   \\
+        \hline
+    \end{tabular}
+%\end{scriptsize}
+\end{center}
+    \label{tab:parity5-fitness-pct}
+\end{table}
+
+Table~\ref{tab:parity5-fitness-pct} shows results for the increased
+initial population size, based on simulations for the \emph{Day 1}
+and \emph{Day 2} periods of all three traces.  Overall, increasing the
+initial population size is an effective solution to tolerate failures
+while preserving (and even improving!) solution quality. For instance,
+for the \emph{Day 1} period of the \emph{entrfin} trace, with host losses
+at 48.02\%, starting with 50\% extra individuals ensures solution quality
+on par with the failure-free case.  Similar results are obtained for the
+\emph{entrfin} and \emph{xwtr} two periods. Furthermore, for the \emph{Day
+2} period of traces \emph{entrfin} and \emph{xwtr}, adding 40\% or 50\%
+extra individuals results in obtaining solutions of better quality than in
+the failure-free case. However, the increase of the initial population is
+not enough for the \emph{ucb} trace as its losses are as high as 96.15\%
+and 68\% for \emph{Day 1} and \emph{Day 2}, respectively. Note that in these
+difficult cases the fault-tolerant approach does not succeed at all.
+
+\begin{table*}
+    \caption{EP5 fitness comparison between failure-prone and failure-free cases using Wilcoxon test (\emph{Day 1 and 2}) -- ``not significantly
+    different'' means fitness quality comparable to the failure-free case.}
+    \begin{tiny}
+\begin{center}
+    \begin{tabular}{|l| l c l c |c| c l c|}
+        \multicolumn{9}{c}{} \\[1ex]
+        \multicolumn{9}{c}{Error Free fitness = 2.56 } \\
+        \hline \hline
+        \multicolumn{1}{c}{}& \multirow{2}{*}{Trace} &\multirow{2}{*}{Fitness} & \multicolumn{1}{c}{Wilcoxon} &
+        \multicolumn{1}{c}{Significantly} & \multicolumn{1}{c}{}&\multirow{2}{*}{Fitness} &\multicolumn{1}{c}{Wilcoxon}
+        &\multicolumn{1}{c}{Significantly} \\
+        \multicolumn{1}{c}{}& & & \multicolumn{1}{c}{Test} &\multicolumn{1}{c}{different?} & \multicolumn{1}{c}{}& &
+        \multicolumn{1}{c}{Test} & \multicolumn{1}{c}{different?}\\
+
+        \hline
+        \multicolumn{1}{|c|}{\multirow{21}{*}{\begin{sideways}Day 1\end{sideways}}} &
+            \emph{entrfin} &  3.58   & W = 6726, p-value = 1.843e-05 & yes  &
+            \multicolumn{1}{|c|}{\multirow{21}{*}{\begin{sideways}Day 2\end{sideways}}} &  \textbf{2.44}       & \textbf{W = 4778.5, p-value = 0.5815 }   & \textbf{no} \\
+& \emph{entrfin} 10\%                &  3.52   & W = 6685, p-value = 2.707e-05          & yes &  &  \textbf{2.65}       & \textbf{W = 5201.5, p-value = 0.6167 }   & \textbf{no} \\
+& \emph{entrfin} 20\%                &  3.01   & W = 5760, p-value = 0.05956            & yes &  &  \textbf{2.29}       & \textbf{W = 4571, p-value = 0.2863   }   & \textbf{no} \\
+& \emph{entrfin} 30\%                &  3.13   & W = 5942.5, p-value = 0.01941          & yes &  &  \textbf{2.36}       & \textbf{W = 4732.5, p-value = 0.505  }   & \textbf{no} \\
+& \emph{entrfin} 40\%                &  \textbf{2.80}   & \textbf{W = 5355, p-value = 0.3773} & \textbf{no} & &  2.01  & W = 4098, p-value = 0.02458              & yes \\
+& \emph{entrfin} 50\%                &  \textbf{2.85}   & \textbf{W = 5620, p-value = 0.1233} & \textbf{no} & &  1.92  & W = 3994.5, p-value = 0.01213            & yes \\ [1ex]
+ 
+& \emph{ucb}                         &  3.98   & W = 7274, p-value = 1.789e-08          & yes & &  5.13                & W = 8735.5, p-value $<$ 2.2e-16            & yes \\
+& \emph{ucb} 10\%                    &  3.75   & W = 6927.5, p-value = 1.799e-06        & yes & &  5.21                & W = 8735.5, p-value $<$ 2.2e-16            & yes\\
+& \emph{ucb} 20\%                    &  3.61   & W = 6769, p-value = 1.123e-05          & yes & &  4.68                & W = 8266.5, p-value = 6.661e-16          & yes \\
+& \emph{ucb} 30\%                    &  3.33   & W = 6390, p-value = 0.0005542          & yes & &  4.50                & W = 8152, p-value = 6.439e-15            & yes \\
+& \emph{ucb} 40\%                    &  3.35   & W = 6408, p-value = 0.000464           & yes & &  4.71                & W = 8325.5, p-value = 2.220e-16          & yes \\
+& \emph{ucb} 50\%                    &  3.17   & W = 6080, p-value = 0.007298           & yes & &  4.47                & W = 8024.5, p-value = 6.95e-14           & yes \\ [1ex]
+ 
+& \emph{xwtr}                        &  \textbf{2.78}   & \textbf{W = 5509, p-value = 0.2043   } & \textbf{no} & &  \textbf{2.61}       & \textbf{W = 5238.5, p-value = 0.5524}    & \textbf{no} \\
+& \emph{xwtr} 10\%                   &  \textbf{2.40}   & \textbf{W = 4762, p-value = 0.5532   } & \textbf{no} 
+& &  \textbf{2.66}       & \textbf{W = 5215.5, p-value = 0.5927}    & \textbf{no} \\
+& \emph{xwtr} 20\%                   &  \textbf{2.32}   & \textbf{W = 4643.5, p-value = 0.3753 } & \textbf{no}
+& &  \textbf{2.42}       & \textbf{W = 4686.5, p-value = 0.4364}    & \textbf{no} \\
+& \emph{xwtr} 30\%                   &  \textbf{2.46}   & \textbf{W = 4802, p-value = 0.6221   } & \textbf{no}
+& &  \textbf{2.33}       & \textbf{W = 4611.5, p-value = 0.3336}    & \textbf{no} \\
+& \emph{xwtr} 40\%                   &  \textbf{2.15}   & \textbf{W = 4363, p-value = 0.1121   } & \textbf{no}
+& &  1.96                & W = 4033.5, p-value = 0.01574            & yes\\
+& \emph{xwtr} 50\%                   &  \textbf{2.13}   & \textbf{W = 4296.5, p-value = 0.08027} & \textbf{no}
+& &  2.24                & \textbf{W = 4511, p-value = 0.2226}      & \textbf{no} \\ 
+\hline
+\multicolumn{9}{c}{\multirow{2}{*}{\textbf{\emph{Results with Host Churn}}}}\\[3ex]
+\hline
+& \emph{entrfin}   & \textbf{2.86} & W = \textbf{5513.5, p-value=0.2012} & \textbf{no}
+& & \textbf{2.75}        & \textbf{W = 5404.5, p-value = 0.3142}    & \textbf{no}\\
+& \emph{ucb}       &  8.87   & W = 9997, p-value = 2.2e-16            & yes          
+& & 5.89                 & W = 9645, p-value $<$ 2.2e-16              & yes \\
+& \emph{xwtr}      &  \textbf{2.56}   & \textbf{W = 4940, p-value = 08823}     & \textbf{no} 
+& & \textbf{2.52}        & \textbf{W = 5035, p-value = 0.9315}      & \textbf{no}\\
+ 
+\hline
+\end{tabular}
+\end{center}
+\end{tiny}
+    \label{tab:parity5-day1-day2-wilcoxon}
+\end{table*}
+
+From these results we conclude that increasing the initial population
+size is effective to maintain fitness quality at the level of that in
+the failure-free case. The fraction by which the population is increased
+is directly correlated to the host loss rate. If an estimation
+of this rate is known, for instance based on historical trends, then the
+initial population size can be chosen accordingly.  Also, one must keep
+in mind that an increased population size implies longer execution time
+for each generation since more individuals must be evaluated.
+
+\begin{figure*}
+    \centering
+        \subfigure[EP5]{\epsfig{figure=img/effort-fitness-ep5-error-free.ps, angle=-90, width=8cm}}
+    \label{fig:ep5-11m-fitness-effort}
+    \caption{Fitness vs. Effort with increased population for failure-free experiments}
+\end{figure*}
+
+\subsubsection{EP5: Results with churn}
+
+In this section we present results for the case in which hosts can become
+available again after becoming unavailable, leading to churn.  Recall from
+the discussion at the beginning of Section~\ref{distribution-individuals}
+that the population size is capped at 4,000 individuals (according to
+Table~\ref{tab:gp-parameters}) and that each worker is assigned $I$
+individuals. Such individuals are randomly generated by the master when
+assigned to a newly available worker.
+
+Table~\ref{tab:fitness-with-return} shows the obtained fitness for the EP5
+problem on all traces. It also shows the host churn represented by the
+minimum, median, mean, maximum, and variance of the number of available
+hosts during application execution. Among all the traces, the \emph{ucb}
+trace is the worst possible scenario as it has very few available
+hosts. This prevents the master from sending individuals to workers,
+both in \emph{Day 1} and \emph{Day 2}, leading to poor fitness values.
+For the \emph{entrfin} and \emph{xwtr} traces, both for \emph{Day 1}
+and \emph{Day 2}, the obtained fitness value is comparable to that in
+the failure-free case  (see Table~\ref{tab:parity5-day1-day2-wilcoxon}
+for statistical significance).
+
+\begin{table*}
+    \caption{Obtained fitness for EP5 with host churn}
+\begin{center}
+    %\begin{scriptsize}
+    \begin{tabular}{|l|c|c|c|c|c|c|}
+        \hline Trace                       & \multicolumn{5}{c|}{Hosts}                                 & \multicolumn{1}{c|}{Fitness} \\     
+        \hline                             & Min. & Median & Mean   &  Max.  &  Var. ($s^2$)  &  EP5              \\
+        \hline Error free                  & -       & -      & -      &  -        &  -                 & 2.56     \\            
+        \hline \emph{entrfin} (\emph{Day 1})  & 92      & 160    & 157.50 &  177      &  179.33            & 2.86     \\ 
+        \hline \emph{entrfin} (\emph{Day 2})  & 180     & 181    & 181.30 &  183      &  0.75              & 2.75     \\ 
+        \hline \emph{ucb} (\emph{Day 1})      & 0       & 1      & 1.51   &  9        &  2.21              & 8.87     \\
+        \hline \emph{ucb} (\emph{Day 2})      & 0       & 2      & 2.57   &  7        &  4.29              & 5.89     \\
+        \hline \emph{xwtr} (\emph{Day 1})     & 28      & 29     & 28.92  &  29       &  0.07              & 2.56     \\           
+        \hline \emph{xwtr} (\emph{Day 2})     & 86      & 86     & 86     &  86       &  0                 & 2.52     \\           
+        \hline     
+\end{tabular}     
+%\end{scriptsize}
+\end{center}
+\label{tab:fitness-with-return}
+\end{table*}
+If the variance of the number of available hosts for a trace is zero,
+then the trace is equivalent to the failure-free case, as the hosts
+do not experience any failure. The obtained fitness should then
+be similar to that in the failure-free case.  
+
+The \emph{xwtr} trace,
+\emph{Day 2}, exhibits such zero variance, and indeed the obtained
+fitness value is similar to that in the failure-free case
+(see Table~\ref{tab:fitness-with-return}). The variance of
+the \emph{xwtr} trace, \emph{Day 1}, is low at $0.07$, and the
+obtained fitness is again on par with that in the failure-free case.
+The \emph{entrfin} trace, \emph{Day 1}, exhibits the largest
+variance.  Nevertheless, the obtained fitness is better than that
+of its counterpart in the non-churn scenario, and
+similar to that in the failure-free case.  This shows that re-acquiring
+hosts is, expectedly, beneficial.  Finally the \emph{ucb} trace
+leads to the worst fitness values despite its low variability (see
+Table~\ref{tab:fitness-with-return}). The reason is a low maximum
+number of available hosts (9 and 7 for \emph{Day 1} and \emph{Day 2},
+respectively), and many periods during which no hosts were available at
+all (in which case the master loses the entire population except for the
+best individual). As a result, it is very difficult to obtain solutions
+comparable to those in the failure-free case.
+
+
+\subsection{GA: 3-trap function}
+
+According to \cite{deb:deception}, 3-trap lies on the region between the deceptive 4-trap and the non-deceptive 2-trap having, therefore, intermediate population size requirements that Thierens estimates in 3000 for the instance under study in \cite{thierens99:scalability}.
+ A trap function is a piecewise-linear function defined on
+unitation (the number of ones in a binary string). There are two distinct regions in the search space, one leading to a
+global optimum and the other one to the local optimum (see Eq. \ref{eq:trap}).  In general, a trap function is defined by the following equation:
+
+
+\begin{equation} \label{eq:trap}
+trap(u(\overrightarrow{x}))=\left\{
+\begin{array}{ll}
+\frac{a}{z}(z-u(\overrightarrow{x})), & \mbox{if}\quad u(\overrightarrow{x}) \leq z \\
+\frac{b}{l-z}(u(\overrightarrow{x})-z), & \mbox{otherwise}
+\end{array} \right.
+\end{equation}
+
+\noindent
+where $u(\overrightarrow{x})$ is the unitation function, \textit{a}\ is the local optimum, \textit{b}\ is the global optimum, \textit{l}\ is the problem size and \textit{z}\ is a slope-change location separating the attraction basin of the two optima. 
+
+For the following experiments, 3-trap was designed with the following parameter values: $a = l-1$, $b = l$, and $z = l-1$. Tests were performed by juxtaposing $m=10$ trap functions in binary strings of length $L=30$ and summing the fitness of each sub-function to obtain the total fitness. 
+All settings are summarized in Table \ref{table:parameters}. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[htbp]
+\centering
+\caption{Parameters of the experiments\label{table:parameters}}
+{\footnotesize
+\begin{tabular}{r l}
+\multicolumn{2}{l}{\textbf{Trap instance}}\\
+\hline
+Size of sub-function ($k$) & $3$\\
+Number of sub-functions ($m$) & $10$\\
+Individual length ($L$) & $30$\\
+&\\
+\multicolumn{2}{l}{\textbf{GA settings}}\\
+\hline
+GA & GGA \\
+Population size & 3000\\
+Selection of Parents & Binary Tournament\\
+Recombination & Uniform crossover, $p_c = 1.0$ \\
+Mutation & Bit-Flip mutation, $p_m = \frac{1}{L}$\\
+%\multicolumn{2}{l}{\textbf{Traces}}\\
+%\hline
+%xxtr & \\
+%
+\end{tabular}
+}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In order to analyze the results with confidence, data has been statistically analyzed 
+(each experiment has been run 100
+times). Firstly, we analyzed the normality of the data using the Kolgomorov-Smirnov and Shapiro-Wilk tests \cite{statistics-r},
+obtaining as a result that all data are non-normal. Thus, to compare two samples, the error-free case with each trace, we used the Wilcoxon test
+(Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows the Wilcoxon analysis of the data). 
+
+\begin{table}
+    \begin{tiny}
+\begin{center}
+    \begin{tabular}{|l| l c l c |c| c l c|}
+        \multicolumn{9}{c}{} \\[1ex]
+        \multicolumn{9}{c}{Error Free fitness = 23.56} \\
+        \hline \hline
+        \multicolumn{1}{c}{}& \multirow{2}{*}{Trace} &\multirow{2}{*}{Fitness} & \multicolumn{1}{c}{Wilcoxon} &
+        \multicolumn{1}{c}{Significantly} & \multicolumn{1}{c}{}&\multirow{2}{*}{Fitness} &\multicolumn{1}{c}{Wilcoxon}
+        &\multicolumn{1}{c}{Significantly} \\
+        \multicolumn{1}{c}{}& & & \multicolumn{1}{c}{Test} &\multicolumn{1}{c}{different?} & \multicolumn{1}{c}{}& &
+        \multicolumn{1}{c}{Test} & \multicolumn{1}{c}{different?}\\
+
+        \hline
+        \multicolumn{1}{|c|}{\multirow{21}{*}{\begin{sideways}Day 1\end{sideways}}} &
+            Entrfin &  23.3 & W = 6093, p-value = 0.002688 & yes &
+            \multicolumn{1}{|c|}{\multirow{21}{*}{\begin{sideways}Day 2\end{sideways}}} &  \textbf{23.57}       & \textbf{W = 4979.5, p-value = 0.9546}   & \textbf{no} \\
+& Entrfin 10\%                &  \textbf{23.47}   & \textbf{W = 5408.5, p-value = 0.2535} & \textbf{no} &  &  \textbf{23.69}  & \textbf{W = 4397.5, p-value = 0.07682}   & \textbf{no} \\
+& Entrfin 20\%                &  \textbf{23.48} & \textbf{W = 5360, p-value = 0.3137} & \textbf{no} &  &  \textbf{23.67}      & \textbf{W = 4522.5, p-value = 0.1645}   & \textbf{no} \\
+& Entrfin 30\%                &  \textbf{23.49}   & \textbf{W = 5283.5, p-value = 0.4271} & \textbf{no} &  &  \textbf{23.70}  & \textbf{W = 4405, p-value = 0.08086}   & \textbf{no} \\
+& Entrfin 40\%                &  \textbf{23.57}   & \textbf{W = 4923.5, p-value = 0.8286} & \textbf{no} & & \textbf{23.69}  & \textbf{W = 4453.5, p-value = 0.11}             & \textbf{no} \\
+& Entrfin 50\%                &  \textbf{23.59}   & \textbf{W = 4910.5, p-value = 0.7994} & \textbf{no} & & 23.75 &  W = 4162.5, p-value = 0.01234
+& yes \\ [1ex]
+ 
+& Ucb                         &  23.22   & W = 6453, p-value = 6.877e-05 & yes & &  23.09  & W = 6672.5, p-value = 7.486e-06 & yes \\
+& Ucb 10\%                    &  23.27   & W = 6098.5, p-value = 0.002753& yes & &  23.12  & W = 6826, p-value = 6.647e-07 & yes\\
+& Ucb 20\%                    &  23.37   & W = 5837.5, p-value = 0.02051 & yes & &  23.14  & W = 6654, p-value = 7.223e-06 & yes \\
+& Ucb 30\%                    &  \textbf{23.40}   & \textbf{W = 5664, p-value = 0.06588}& \textbf{no} & & 23.26 & W = 6371, p-value = 0.0001507 & yes \\
+& Ucb 40\%                    &  \textbf{23.51}   & \textbf{W = 5186.5, p-value = 0.6004}&\textbf{no}& &  23.37 & W = 5893.5, p-value = 0.01316 & yes \\
+& Ucb 50\%                    &  \textbf{23.42}   & \textbf{W = 5623, p-value = 0.08335}& \textbf{no}& &  23.32 & W = 6108, p-value = 0.002166 & yes \\ [1ex]
+ 
+& Xwtr                        &  \textbf{23.56}   & \textbf{W = 5056, p-value = 0.8748} & \textbf{no} & &  \textbf{23.60} & \textbf{W = 4806, p-value = 0.5791} & \textbf{no} \\
+& Xwtr 10\%                   &  \textbf{23.57}   & \textbf{W = 4923.5, p-value = 0.8286} & \textbf{no} 
+& &  \textbf{23.62}       & \textbf{W = 4765, p-value = 0.5002}    & \textbf{no} \\
+& Xwtr 20\%                   &  \textbf{23.68}   & \textbf{W = 4474, p-value = 0.1245} & \textbf{no}
+& &  \textbf{23.69}       & \textbf{W = 4453.5, p-value = 0.11}    & \textbf{no} \\
+& Xwtr 30\%                   &  23.73   & W = 4259.5, p-value = 0.02812 & yes
+& &  \textbf{23.60}       & \textbf{W = 4806, p-value = 0.5791}    & \textbf{no} \\
+& Xwtr 40\%                   &  \textbf{23.68}   & \textbf{W = 4502, p-value = 0.1466} & \textbf{no}
+& &  \textbf{23.63}                & \textbf{W = 4688.5, p-value = 0.3695}   & \textbf{no}\\
+& Xwtr 50\%                   &  \textbf{23.71}   & \textbf{W = 4356.5, p-value = 0.05817} & \textbf{no}
+& &  23.77               &  W = 4065.5, p-value = 0.004877 & yes \\ 
+\hline
+\multicolumn{9}{c}{\multirow{2}{*}{\textbf{\emph{Results with Host Churn}}}}\\[3ex]
+\hline
+& Entrfin   & \textbf{23.52} & W = \textbf{W = 5222, p-value = 0.5322} & \textbf{no}
+& & \textbf{23.58}        & \textbf{W = 4931, p-value = 0.8452}    & \textbf{no}\\
+& Ucb       &  21.31   & W = 9708.5, p-value $<$ 2.2e-16   & yes & & 23.03 & W = 7038.5, p-value = 4.588e-08 & yes \\
+& Xwtr      &  \textbf{23.64}   & \textbf{W = 4640, p-value = 0.2982}     & \textbf{no} 
+& & \textbf{23.7}        & \textbf{W = 4405, p-value = 0.08086}      & \textbf{no}\\
+ 
+\hline
+\end{tabular}
+\end{center}
+\end{tiny}
+    \caption{3-Trap fitness comparison between error-prone and error-free cases using Wilcoxon test (\emph{Day 1 and 2}) -- ``not significantly
+    different'' means fitness quality comparable to the error-free case.}
+    \label{tab:trap3-day1-day2-wilcoxon}
+\end{table}
+
+Fig. \ref{fig:population-length} shows, for the worst-case scenario, how the population decreases as failures occur in the
+system. As explained before, two different 24-hours periods randomly selected are shown, denoted by Day 1 and Day 2,
+for the three employed traces of the experiments. Thus, a total of 6 different experiments, one per trace and day period,
+were run with the 3-Trap function problem. 
+
+Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows a summary of the obtained results for the experiments. From all the traces,
+the \emph{ucb}  has obtained the worst fitness 23.22 and 23.09 (respectively for both periods Day 1 and Day 2). The reason is that this trace in the first day loses a 64\% of the population and in the second day it loses 
+more or less the whole population 95.83\% (see Fig. \ref{fig:population-length}). Consequently it is very difficult for the
+algorithm to obtain a solution with a similar quality to the error-free scenario. 
+
+The second worst case of all the experiments is the \emph{entrfin} trace for the first period (Day 1). This trace loses more or less half of the
+population in the first 5 generations (see Fig. \ref{fig:population-length}), making really difficult to obtain a good
+solution even though the population size is steady the rest of the generations. Thus, the obtained fitness for this period is not comparable to the error-free
+case.
+
+Finally, the \emph{xwtr} trace in both periods obtains solutions with similar quality to the error-free environment (23.56 and 23.6
+respectively for each day). In both periods, the \emph{xwtr} trace does not lose more than a 20\% for Day 1 and 12\% for the second
+day. Consequently, we conclude that for the 3-Trap function problem, it is possible to tolerate a gradual loss of up to 20\% of the
+individuals  without sacrificing solution quality and more importantly without using any fault-tolerance mechanism.
+Nevertheless, if the loss of individuals is too high, above the 45\%, the solution quality is significantly diminished. Since
+real-world DGSs experience such large amount of failures, we attempt to address this problem. Our simple idea is to increase
+the initial population size (a 10\%, 20\%, 30\%, 40\% and 50\%) and run the same simulations using the same traces. The aim
+is to compensate the loss of the system by providing more individuals at the first generation. 
+
+Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows the obtained results for Day 1 and Day 2 periods of the three traces with the
+increased population. For the \emph{entrfin} trace, the first period (Day 1) with a loss rate of 45.3\%, a 10\% extra
+individuals is enough to obtain solutions of similar quality to the error-free case. In the second period, Day 2, the trace obtains
+similar solutions to the error-free case and when adding an extra 50\% the obtained solution is even better than in the
+error-free case.
+
+For the \emph{ucb} trace, the first period (Day 1) increasing a 30\% the size of the population is sufficient to obtain solutions with
+similar quality to the error-free case. The second period, Day 2, even though an extra 50\% of individuals is added at the first
+generation it is not enough to cope with the high loss rate of this period: 95.83\%. 
+
+Finally, the \emph{xwtr} trace for both periods obtains solutions with similar quality to the error-free case and in some cases it improves it.
+For this trace, the increased population would have not been necessary because the PGA tolerates, 
+without any extra individual, the rate loss of both periods.
+
+It is important to remark that by adding more individuals to the initial population, we are increasing the computation time
+since more individuals have to be evaluated per generation. Nevertheless, this extra time is similar to the extra time
+that would be required by standard fault tolerance mechanisms (e.g. failure detection and re-send lost individuals for
+fitness evaluation). Thus, we conclude that increasing the population size, accordingly to the failure rate, is enough to improve the PGA
+quality of solutions when the failure rate is known.
+
+Up to now, we have only considered the worst-case scenario: lost resources never become available again. Nevertheless,
+real-world DG systems does not behave like this assumption, and thus we are going to use the traces with the possibility of
+re-acquiring the lost resources (see Fig. \ref{fig:trazas2}). Next section analyzes the results obtained when re-acquiring
+lost resources is a possibility.
+
+\subsubsection{3-trap:Results with churn}
+
+When using the full churn traces of the three DGSs (\emph{entrfin}, \emph{ucb} and \emph{xwtr}) an important question arises: what work is
+assigned to the new available workers? We have assumed that when workers become available again the master node creates
+$I$ new random individuals and increases the size of the population accordingly. Thus, the size of the population can be
+changed dynamically as individuals are added and removed along generations. In this scenario it could happen that new workers
+nodes appear during the execution of the algorithm increasing the population over its optimum size. Hence
+the master node is not allowed to create more individuals than the optimum population size leaving several workers
+idle. In order to avoid idle workers, it would be interesting to adjust the number of $I$ individuals to evaluate accordingly
+to the number of available hosts. Nevertheless, we leave such load-balancing study for a
+future work. 
+
+On the other hand, due to the loss of resources, the population can be emptied because all the workers have disappeared. If 
+this situation occurs, the server node proceeds to the next generation by waiting the specified time $T$ (based on the required 
+time per generation in the failure-free environment) for new workers.
+
+Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows the obtained results for the three traces with the host-churn phenomena
+(\emph{entrfin}, \emph{ucb} and \emph{xwtr}) and the previous corresponding two periods: Day 1 and Day 2. We used the same periods as in the
+worst-case scenario, but now choosing a random point in the 24-hours period as the starting point for the algorithm. Tab.
+\ref{tab:host-churn-data} shows the obtained fitness of the 3-Trap function problem and the host churn of each trace represented by the
+minimum, median, mean, maximum, and variance of the number of available worker nodes.
+
+\begin{table*}
+    \caption{Obtained fitness for 3-Trap function with host churn}
+\begin{center}
+    \begin{footnotesize}
+    \begin{tabular}{|l|c|c|c|c|c|c|}
+        \hline Trace                       & \multicolumn{5}{c|}{Hosts}                                 & \multicolumn{1}{c|}{Fitness} \\     
+        \hline                             & Min.    & Median & Mean   &  Max.  &  Var. ($s^2$)  &  3-Trap  \\
+        \hline Error free                  & -       & -      & -      &  -     &  -             & 23.56\\ 
+        \hline entrfin (\emph{Day 1})      & 92      & 161.5  &  156.8 &  177   & 305.59         & 23.52\\ 
+        \hline entrfin (\emph{Day 2})      & 180     & 181    & 180.9  &  182   &  0.6           & 23.58\\ 
+        \hline ucb (\emph{Day 1})          & 0       & 2      & 1.9    &  9     &  3.12          & 21.31\\ 
+        \hline ucb (\emph{Day 2})          & 0       & 4      & 3.7    &  7     &  2.7           & 23.03\\ 
+        \hline xwtr (\emph{Day 1})         & 28      & 29     & 28.87  &  29    &  0.11          & 23.64\\ 
+        \hline xwtr (\emph{Day 2})         & 86      & 86     & 86     &  86    &  0             & 23.70\\ 
+        \hline     
+\end{tabular}     
+\end{footnotesize}
+\end{center}
+\label{tab:host-churn-data}
+\end{table*}
+
+If the variance of the number of available hosts is zero, then the execution is obviously the same as in the error-free case because
+the number of hosts is steady along generations. 
+In this case, the obtained fitness should be similar to the error-free
+case. This situation is present within the second period (Day 2) of the \emph{xwtr} trace (variance equal to zero) and thus the obtained fitness is similar to the
+error-free case (see Tab. \ref{tab:trap3-day1-day2-wilcoxon}). The other period of the \emph{xwtr} trace has also a very small
+variance, 0.11, resulting in a similar solution quality in comparison with the error-free scenario. The \emph{entrfin} trace for both
+periods obtains solutions of similar quality to the error-free environment, even though the large variance observed in the
+Day 1 period ($s^2=305.59$). Despite the large variance, the number of available hosts is high in comparison with the other
+traces, so the PGA tolerates better the failures and provides solutions of similar quality to the error-free case. Finally,
+the \emph{ucb} trace obtains the worst results due to in both periods the minimum number of available hosts is zero. Consequently,
+the population is emptied, making very difficult to obtain solutions of similar quality to the error-free
+environment. 
+
+
+\section{Summary of Results}
+
+Based on two standard applications, EP5 and 3-trap,  we have shown that
+PGP and PGA applications based on the master-worker model running on DGSs
+that exhibit host failures can achieve solution qualities close to
+those in the failure-free case, without resorting to any fault
+tolerance technique.  Two scenarios were tested: (i)~the scenario in
+which lost hosts never come back but in which one starts with a large
+number of hosts; and (ii)~the scenario in which hosts can re-appear
+during application execution.  For scenario~(i) we found that there is
+an approximately linear degradation of solution quality as host losses
+increase. This degradation can be alleviated by increasing initial
+population size.  For scenario~(ii) the degradation varies during
+application execution as the number of workers fluctuates.  The main observation
+is that in both cases we have \emph{graceful degradation}.
+
+\section{Conclusions} 
+\label{conclusions}
+In this chapter we have analyzed the behavior of Parallel Genetic
+Programming (PGP) and Parallel Genetic Algorithms executing in distributed platforms with
+high failure rates, with the goal of characterizing the inherent fault
+tolerance capabilities of the PGP paradigm.  We have used two well-known
+problems and, to the best of our knowledge, for the first time in this
+context we have used host availability traces collected on real-world
+Desktop Grid (DG) platforms.
+
+Our main conclusion is that PGP and PGA inherently provides \emph{graceful
+degradation} without the need for fault tolerance techniques.
+
+We have presented a simple method for tolerating high host losses,
+which consists of increasing the initial population size. 
+
+To the best of our knowledge, this is the first time that PGP and PGAs are
+characterized from a fault-tolerance perspective.  We contend that our
+conclusions can be extended to Parallel Evolutionary Algorithms (PEAs)
+via similar experimental validation. 
+\bibliographystyle{plain}
+\bibliography{daniel-lombrana,enlaces,articulos,gp-bibliography,jp2008,juanlu,smt,bib_henri}
+\end{document}

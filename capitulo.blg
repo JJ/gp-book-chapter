@@ -1,0 +1,60 @@
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: capitulo.aux
+The style file: plain.bst
+Database file #1: daniel-lombrana.bib
+Database file #2: enlaces.bib
+Database file #3: articulos.bib
+Database file #4: gp-bibliography.bib
+Database file #5: jp2008.bib
+Database file #6: juanlu.bib
+Database file #7: smt.bib
+Database file #8: bib_henri.bib
+Warning--empty journal in transputer
+Warning--can't use both author and editor fields in distributed-systems
+Warning--empty booktitle in traces-dgc
+Warning--can't use both volume and number fields in traces-dgc
+Warning--can't use both author and editor fields in spatially-structured-EAs
+Warning--empty booktitle in ipgp2
+Warning--can't use both volume and number fields in ipgp2
+You've used 54 entries,
+            2118 wiz_defined-function locations,
+            841 strings with 14962 characters,
+and the built_in function-call counts, 21735 in all, are:
+= -- 2136
+> -- 1071
+< -- 33
++ -- 416
+- -- 360
+* -- 1542
+:= -- 3457
+add.period$ -- 176
+call.type$ -- 54
+change.case$ -- 320
+chr.to.int$ -- 0
+cite$ -- 61
+duplicate$ -- 870
+empty$ -- 1651
+format.name$ -- 360
+if$ -- 4682
+int.to.chr$ -- 0
+int.to.str$ -- 54
+missing$ -- 58
+newline$ -- 274
+num.names$ -- 120
+pop$ -- 383
+preamble$ -- 1
+purify$ -- 272
+quote$ -- 0
+skip$ -- 650
+stack$ -- 0
+substring$ -- 1327
+swap$ -- 284
+text.length$ -- 33
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 204
+warning$ -- 7
+while$ -- 205
+width$ -- 56
+write$ -- 618
+(There were 7 warnings)

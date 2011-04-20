@@ -1,0 +1,347 @@
+\begin{thebibliography}{10}
+
+\bibitem{ackley:trap}
+David~H. Ackley.
+\newblock {\em A connectionist machine for genetic hillclimbing}.
+\newblock Kluwer Academic Publishers, Norwell, MA, USA, 1987.
+
+\bibitem{starfish-fault-tolerant}
+Adnan Agbaria and Roy Friedman.
+\newblock Starfish: Fault-tolerant dynamic mpi programs on clusters of
+  workstations.
+\newblock In {\em HPDC '99: Proceedings of the The Eighth IEEE International
+  Symposium on High Performance Distributed Computing}, page~31, Washington,
+  DC, USA, 1999. IEEE Computer Society.
+
+\bibitem{parallel-eas}
+E.~Alba and M.~Tomassini.
+\newblock Parallelism and evolutionary algorithms.
+\newblock {\em Evolutionary Computation, IEEE Transactions on}, 6(5):443--462,
+  Oct 2002.
+
+\bibitem{boinc-paper}
+D.P. Anderson.
+\newblock Boinc: a system for public-resource computing and storage.
+\newblock In {\em Grid Computing, 2004. Proceedings. Fifth IEEE/ACM
+  International Workshop on}, pages 4--10, 2004.
+
+\bibitem{boinc-power}
+D.P. Anderson and G.~Fedak.
+\newblock {The Computational and Storage Potential of Volunteer Computing}.
+\newblock {\em Proceedings of the IEEE International Symposium on Cluster
+  Computing and the Grid (CCGRID’06)}, 2006.
+
+\bibitem{transputer}
+David Andre and John~R. Koza.
+\newblock Parallel genetic programming: a scalable implementation using the
+  transputer network architecture.
+\newblock pages 317--337, 1996.
+
+\bibitem{dream}
+M.G. Arenas, P.~Collet, A.E. Eiben, M.~Jelasity, J.J. Merelo, B.~Paechter,
+  M.~Preu{\ss}, and M.~Schoenauer.
+\newblock {A framework for distributed evolutionary algorithms}.
+\newblock {\em Lecture Notes in Computer Science}, pages 665--675, 2003.
+
+\bibitem{paradiseo}
+S.~Cahon, N.~Melab, and E.G. Talbi.
+\newblock {Building with paradisEO reusable parallel and distributed
+  evolutionary algorithms}.
+\newblock {\em Parallel Computing}, 30(5-6):677--697, 2004.
+
+\bibitem{parallel-ga-survey}
+E.~Cantu-Paz.
+\newblock {A survey of parallel genetic algorithms}.
+\newblock {\em Calculateurs Paralleles, Reseaux et Systems Repartis},
+  10(2):141--171, 1998.
+
+\bibitem{statistics-r}
+Michael~J. Crawley.
+\newblock {\em Statistics, An Introduction using R}.
+\newblock Wiley, 2007.
+
+\bibitem{maeb-2007-boinc}
+Francisco~Chávez de~la O, Jose~Luis Guisado, Daniel Lombraña, and Francisco
+  Fernández.
+\newblock Una herramienta de programación genética paralela que aprovecha
+  recursos públicos de computación.
+\newblock In {\em V Congreso Español sobre Metaheurísticas, Algoritmos
+  Evolutivos y Bioinspirados}, volume~1, pages 167--173, Tenerife, Spain,
+  February 2007.
+
+\bibitem{deb:deception}
+Kalyanmoy Deb and David~E. Goldberg.
+\newblock Analyzing deception in trap functions.
+\newblock In L.~Darrell Whitley, editor, {\em FOGA}, pages 93--108. Morgan
+  Kaufmann, 1992.
+
+\bibitem{milkywayathome}
+T.~Desell, B.~Szymanski, and C.~Varela.
+\newblock {An asynchronous hybrid genetic-simplex search for modeling the Milky
+  Way galaxy using volunteer computing}.
+\newblock In {\em Proceedings of the 10th annual conference on Genetic and
+  evolutionary computation}, pages 921--928. ACM, 2008.
+
+\bibitem{lilgp}
+Douglas~Zongker Dr. Bill~Punch.
+\newblock Lil-gp.
+\newblock \url{http://garage.cse.msu.edu/software/lil-gp/index.html}.
+
+\bibitem{biblia-checkpointing}
+E.N.M. Elnozahy, L.~Alvisi, Y.M. Wang, and D.B. Johnson.
+\newblock {A survey of rollback-recovery protocols in message-passing systems}.
+\newblock {\em ACM Computing Surveys (CSUR)}, 34(3):375--408, 2002.
+
+\bibitem{plague}
+L.~Vanneschi F.~Fernández, M.~Tomassini.
+\newblock Saving computational effort in genetic programming by means of
+  plagues.
+\newblock {\em Evolutionary Computation, 2003. CEC '03. The 2003 Congress on},
+  2003.
+
+\bibitem{Fernandez:PGP}
+Francisco Fernandez, Giandomenico Spezzano, Marco Tomassini, and Leonardo
+  Vanneschi.
+\newblock Parallel genetic programming.
+\newblock In Enrique Alba, editor, {\em Parallel Metaheuristics}, Parallel and
+  Distributed Computing, chapter~6, pages 127--153. Wiley-Interscience,
+  Hoboken, New Jersey, USA, 2005.
+
+\bibitem{mpi}
+Message Passing~Interface Forum.
+\newblock Mpi: a message-passing interface standard.
+\newblock {\em International Journal Supercomput. Applic.}, 8(3--4):165--414,
+  1994.
+
+\bibitem{master-slave-framework-beagle}
+Christian Gagné, Marc Parizeau, and Marc Dubreuil.
+\newblock Distributed beagle: An environment for parallel and distributed
+  evolutionary computations.
+\newblock In {\em Proc. of the 17th Annual International Symposium on High
+  Performance Computing Systems and Applications (HPCS) 2003}, pages 201--208,
+  May 11-14 2003.
+
+\bibitem{fault-tolerant-async}
+Felix~C. Gartner.
+\newblock Fundamentals of fault-tolerant distributed computing in asynchronous
+  environments.
+\newblock {\em ACM Computing Surveys}, 31(1):1--26, 1999.
+
+\bibitem{distributed-systems}
+Sukumar Ghosh.
+\newblock {\em Distributed systems: an algorithmic approach}.
+\newblock Chapman \& Hall/CRC, 2006.
+
+\bibitem{bads-2009}
+Daniel~Lombraña González, Francisco~Fernández de~Vega, and Henri Casanova.
+\newblock Characterizing fault tolerance in genetic programming.
+\newblock In {\em Workshop on Bio-Inspired Algorithms for Distributed Systems},
+  pages 1--10, Barcelona, Spain, June 2009.
+
+\bibitem{jfgcs-2010}
+Daniel~Lombraña González, Francisco~Fernández de~Vega, and Henri Casanova.
+\newblock Characterizing fault tolerance in genetic programming.
+\newblock {\em Future Generation Computer Systems}, 26(6):847--856, 2010.
+
+\bibitem{pdp-2009}
+Daniel~Lombraña González, Francisco~Fernández de~Vega, Leonardo Trujillo,
+  Gustavo Olague, Lourdes Araujo, Pedro Castillo, Juan~Julián Merelo, and Ken
+  Sharman.
+\newblock Increasing gp computing power for free via desktop grid computing and
+  virtualization.
+\newblock In {\em Proceedings of the 17th Euromicro Conference on Parallel,
+  Distributed and Network-based Processing}, pages 419--423, Weimar, Germany,
+  February 2009.
+
+\bibitem{evocop-2010}
+Daniel~Lombraña González, Juan Luís~Jiménez Laredo, Francisco~Fernández
+  de~Vega, and Juan Julián~Merelo Guervós.
+\newblock Characterizing fault-tolerance of genetic algorithms in desktop grid
+  systems.
+\newblock In {\em 10th European Conference on Evolutionary Computation in
+  Combinatorial Optimization}, pages 131--142, Istanbul, Turkey, April 2010.
+
+\bibitem{primary_backup}
+R.~Guerraoui and A.~Schiper.
+\newblock {Software-Based Replication for Fault Tolerance}.
+\newblock {\em IEEE Computer}, 30(4):68--74, 1997.
+
+\bibitem{gecco-2007-island-model}
+Ignacio Hidalgo, Francisco Fernández, Juan Lanchares, and Daniel Lombraña.
+\newblock Is the island model fault tolerant?
+\newblock In {\em Genetic and Evolutionary Computation Conference}, volume~2,
+  page 1519, London, England, July 2007.
+
+\bibitem{epidemic-algorithms-fault-tolerance-dream}
+M{\'a}rk Jelasity, Mike Preu{\ss}, Maarten van Steen, and Ben Paechter.
+\newblock Maintaining connectivity in a scalable and robust distributed
+  environment.
+\newblock In Henri~E. Bal, Klaus-Peter L{\"o}hr, and Alexander Reinefeld,
+  editors, {\em Proceedings of the Second {IEEE/ACM} International Symposium on
+  Cluster Computing and the Grid {(CCGrid2002)}}, pages 389--394, Berlin,
+  Germany, 2002. {IEEE} Computer Society.
+\newblock 2nd {GP2PC} workshop.
+
+\bibitem{einsteinathome-2}
+B.~Knispel, B.~Allen, JM~Cordes, JS~Deneva, D.~Anderson, C.~Aulbert, NDR Bhat,
+  O.~Bock, S.~Bogdanov, A.~Brazier, et~al.
+\newblock {Pulsar Discovery by Global Volunteer Computing}.
+\newblock {\em Science}, 329(5997):1305, 2010.
+
+\bibitem{traces-dgc}
+D.~Kondo, G.~Fedak, F.~Cappello, A.A. Chien, and H.~Casanova.
+\newblock {Characterizing resource availability in enterprise desktop grids}.
+\newblock volume~23, pages 888--903. Elsevier, 2007.
+
+\bibitem{dgc-caracteristicas}
+D.~Kondo, M.~Taufer, C.~Brooks, H.~Casanova, and A.~Chien.
+\newblock {Characterizing and evaluating desktop grids: An empirical study}.
+\newblock In {\em Proceedings of the International Parallel and Distributed
+  Processing Symposium (IPDPS’04)}. Citeseer, 2004.
+
+\bibitem{dynamic-population-variation-gp}
+P.~Kouchakpour, A.~Zaknich, and T.~Br{\\"a}unl.
+\newblock {Dynamic population variation in genetic programming}.
+\newblock {\em Information Sciences}, 179(8):1078--1091, 2009.
+
+\bibitem{koza:book}
+John~R. Koza.
+\newblock {\em Genetic Programming: On the Programming of Computers by Means of
+  Natural Selection}.
+\newblock MIT Press, Cambridge, MA, USA, 1992.
+
+\bibitem{laredo08:churn}
+Juan L.~J. Laredo, Pedro~A. Castillo, Antonio~M. Mora, Juan~J. Merelo, and
+  Carlos Fernandes.
+\newblock Resilience to churn of a peer-to-peer evolutionary algorithm.
+\newblock {\em Int. J. High Performance Systems Architecture}, 1(4):260--268,
+  2008.
+
+\bibitem{juanlu-ppsn}
+Juan L.~J. Laredo, Agoston~E. Eiben, Maarten van Steen, and Juan~J. Merelo.
+\newblock On the run-time dynamics of a peer-to-peer evolutionary algorithm.
+\newblock In Gunter Rudolph, Thomas Jansen, Simon Lucas, Carlo Poloni, and
+  Nicola Beume, editors, {\em Parallel Problem Solving from Nature - PPSN X},
+  volume 5199 of {\em LNCS}, pages 236--245, Dortmund, 13-17 September 2008.
+  Springer.
+
+\bibitem{cec-2007}
+Daniel Lombraña and Francisco Fernández.
+\newblock Analyzing fault tolerance on parallel genetic programming by means of
+  dynamic-size populations.
+\newblock In {\em Congress on Evolutionary Computation}, volume~1, pages 4392
+  -- 4398, Singapore, September 2007.
+
+\bibitem{ibergrid-2008}
+Daniel Lombraña, Francisco Fernández, L.~Trujillo, G.~Olague, M.~Cárdenas,
+  L.~Araujo, P.~Castillo, K.~Sharman, and A.~Silva.
+\newblock Interpreted applications within boinc infrastructure.
+\newblock In {\em Ibergrid 2008}, pages 261--272, Porto, Portugal, May 2008.
+
+\bibitem{vmware-boinc-ipgp}
+Daniel Lombraña, Francisco Fernández, Leonardo Trujillo, Gustavo Olague, and
+  Ben Segal.
+\newblock Customizable execution environments with virtual desktop grid
+  computing.
+\newblock {\em Parallel and Distributed Computing and Systems, PDCS}, 2007.
+
+\bibitem{luke:2003:gecco}
+Sean Luke, Gabriel~Catalin Balan, and Liviu Panait.
+\newblock Population implosion in genetic programming.
+\newblock In E.~Cant{\'u}-Paz, J.~A. Foster, K.~Deb, D.~Davis, R.~Roy, U.-M.
+  O'Reilly, H.-G. Beyer, R.~Standish, G.~Kendall, S.~Wilson, M.~Harman,
+  J.~Wegener, D.~Dasgupta, M.~A. Potter, A.~C. Schultz, K.~Dowsland,
+  N.~Jonoska, and J.~Miller, editors, {\em Genetic and Evolutionary Computation
+  -- GECCO-2003}, volume 2724 of {\em LNCS}, pages 1729--1739, Chicago, 12-16
+  July 2003. Springer-Verlag.
+
+\bibitem{ecj}
+Sean Luke, Liviu Panait, Gabriel Balan, Sean Paus, Zbigniew Skolicki, Elena
+  Popovici, Joseph Harrison, Jeff Bassett, Robert Hubley, and Alexander
+  Chircop.
+\newblock Ecj a java-based evolutionary computation research system, 2007.
+\newblock http://cs.gmu.edu/~eclab/projects/ecj/.
+
+\bibitem{grid-parallel-bioinspired-algorithms}
+N.~Melab, S.~Cahon, and E.-G. Talbi.
+\newblock Grid computing for parallel bioinspired algorithms.
+\newblock {\em J. Parallel Distrib. Comput.}, 66(8):1052--1061, 2006.
+
+\bibitem{condor-pvm}
+J.~Pruyne and M.~Livny.
+\newblock {Interfacing Condor and PVM to harness the cycles of workstation
+  clusters}.
+\newblock {\em FGCS. Future generations computer systems}, 12(1):67--85, 1996.
+
+\bibitem{hardware-failures}
+D.A. Reed, C.~Lu, and C.L. Mendes.
+\newblock {Reliability challenges in large systems}.
+\newblock {\em Future Generation Computer Systems}, 22(3):293--302, 2006.
+
+\bibitem{largescale_failures}
+B.~Schroeder and G.~A. Gibson.
+\newblock {A Large-Scale Study of Failures in High-Performance Computing
+  Systems}.
+\newblock In {\em Proc. of the International Conference on Dependable Systems},
+  pages 249--258, 2006.
+
+\bibitem{hardware-reliability-cost}
+M.L. Shooman.
+\newblock {\em {Reliability of computer systems and networks: fault tolerance,
+  analysis and design}}.
+\newblock Wiley-Interscience, 2002.
+
+\bibitem{Stutzbach06Understanding}
+Daniel Stutzbach and Reza Rejaie.
+\newblock Understanding churn in peer-to-peer networks.
+\newblock In {\em Proceedings of the 6th ACM SIGCOMM on Internet measurement
+  (IMC 2006)}, pages 189--202, New York, NY, USA, 2006. ACM Press.
+
+\bibitem{pvm}
+V.~S. Sunderam.
+\newblock Pvm: A framework for parallel distributed computing.
+\newblock {\em Concurrency: Practice and Experience}, 2:315--339, 1990.
+
+\bibitem{rejuvenation}
+Ann~T. Tai and Kam~S. Tso.
+\newblock A performability-oriented software rejuvenation framework for
+  distributed applications.
+\newblock In {\em DSN '05: Proceedings of the 2005 International Conference on
+  Dependable Systems and Networks (DSN'05)}, pages 570--579, Washington, DC,
+  USA, 2005. IEEE Computer Society.
+
+\bibitem{thierens99:scalability}
+Dirk Thierens.
+\newblock Scalability problems of simple genetic algorithms.
+\newblock {\em Evolutionary Computation}, 7(4):331--352, 1999.
+
+\bibitem{modelo-islas2}
+M.~Tomassini.
+\newblock Parallel and distributed evolutionary algorithms: A review.
+\newblock In P.~Neittaanmäki K.~Miettinen, M.Mäkelä and J.~Periaux, editors,
+  {\em Evolutionary Algorithms in Engineering and Computer Science}, pages
+  113,133. J. Wiley and Sons, Chichester, 1999.
+
+\bibitem{spatially-structured-EAs}
+M.~Tomassini.
+\newblock {\em Spatially Structured Evolutionary Algorithms}.
+\newblock Springer, 2005.
+
+\bibitem{dynamic-population-gp}
+M.~Tomassini, L.~Vanneschi, J.~Cuendet, and F.~Fernandez.
+\newblock {A new technique for dynamic size populations in genetic
+  programming}.
+\newblock In {\em Evolutionary Computation, 2004. CEC2004. Congress on},
+  volume~1, 2004.
+
+\bibitem{ipgp2}
+L.~Trujillo and G.~Olague.
+\newblock {Automated Design of Image Operators that Detect Interest Points}.
+\newblock volume~16, pages 483--507. MIT Press, 2008.
+
+\bibitem{hardware-reliability}
+E.~Vargas.
+\newblock {High availability fundamentals}.
+\newblock {\em Sun Blueprints series}, 2000.
+
+\end{thebibliography}
