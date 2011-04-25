@@ -49,10 +49,16 @@ The results show that when parallel GAs and GPs are run on non-reliable distribu
 
 Genetic Algorithms (GAs) and Genetic Programming (GP) are well known representatives of Evolutionary Algorithms (EAs), frequently used to solve optimization 
 problems. In both cases, when the problem faced is complex, GAs and GP require a large amount of computing resources.
-The more complex the problem, the larger the computing requirements. This fact leads to a sometimes prohibitively long time to solution that happens, for example, when tackling real-world problems. In order to reduce the execution time of EAs, researchers have applied parallel and distributed programming during the last decades. 
+The more complex the problem, the larger the computing requirements. This fact leads to a sometimes prohibitively long time to solution that happens, for example, when tackling real-world problems. In order to reduce the execution time of EAs, researchers have applied parallel and distributed programming techniques
+% Añadido techniques - Juanlu
+ during the last decades. 
 
-There are two main advantages when exploiting the inherent parallelism of EAs: (i) the computing load is distributed among different processors, therefore speeding-up the
-execution time, and (ii) the structural changes applied to the algorithm when deployed in parallel, which allow them to outperform the sequential counterpart 
+There are two main advantages in
+% when -> in - Juanlu
+ exploiting the inherent parallelism of EAs: (i) the computing load is distributed among different processors, which improves the
+% therefore speeding-up the -> which improves the - Juanlu
+execution time, and (ii) the algorithm itself may suffer of structural changes allowing to outperform the sequential counterpart
+% the structural changes applied to the algorithm when deployed in parallel, which allow them to outperform the sequential counterpart -> the algorithm itself may suffer of structural changes allowing to outperform the sequential counterpart - Juanlu
 (see for instance \cite{spatially-structured-EAs}).
 
 Parallel algorithms, and thus parallel GAs and GP, must be run on platforms that consists of multiple computing elements or \emph{processors}. Although supercomputers can be employed, usually comodity clusters and distributed systems are used instead, due to both good performance and cheaper prices.  One of the most popular distributed systems nowadays are the  Desktop Grid Systems (DGSs). 
