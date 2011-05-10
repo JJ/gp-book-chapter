@@ -48,8 +48,7 @@ The results show that when parallel GAs and GPs are run on non-reliable distribu
 \section{Introduction}
 
 Genetic Algorithms (GAs) and Genetic Programming (GP) are well known representatives of Evolutionary Algorithms (EAs), frequently used to solve optimization 
-problems. In both cases, when the problem faced is complex, GAs and GP require a large amount of computing resources.
-The more complex the problem, the larger the computing requirements. This fact leads to a sometimes prohibitively long time to solution that happens, for example, when tackling real-world problems. In order to reduce the execution time of EAs, researchers have applied parallel and distributed programming techniques
+problems. Both require a large amount of computing resources when the problem faced is complex.  The more complex the problem, the larger the computing requirements. This fact leads to a sometimes prohibitively long time to solution that happens, for example, when tackling real-world problems. In order to reduce the execution time of EAs, researchers have applied parallel and distributed programming techniques
 % Añadido techniques - Juanlu
  during the last decades. 
 
@@ -80,15 +79,14 @@ likelihood that processors suffer a failure \cite{largescale_failures}, interrup
 chapter we use the term ``failure'' and do not make the subtle distinction between ``failure'' and ``fault'', which
 is not necessary for our purpose).
 
-In DGSs, computers join the system, contribute some resources 
-and leave it afterwards causing a collective effect known as churn \cite{Stutzbach06Understanding}.
+The above described problem is characteristic of DGSs: computers join the system, contribute some resources and leave it afterwards causing a collective effect known as churn \cite{Stutzbach06Understanding}.
 Churn is an inherent property of DGSs and has to be taken into 
 account in the design of applications, as these interruptions (computer powered off, busy CPU, etc.) are interpreted by the application as a failure.   
 
 To cope with failures, researchers have studied and developed different mechanisms to circumvent the failures or restore the
 system once a failure occurs. These techniques are known as \emph{Fault-Tolerance mechanisms} and enforce that an
 application behave in a well-defined manner when a failure occurs \cite{fault-tolerant-async}.
-Nevertheless, to the best of our knowledge, not many efforts have been applied to study the fault
+Nevertheless, not many efforts have been applied to study the fault
 tolerance features of PEAs in general, and of PGAs and PGP in particular. 
 
 In previous works \cite{cec-2007,gecco-2007-island-model} we firstly analyzed the fault-tolerance nature of Parallel Genetic
@@ -103,11 +101,10 @@ that PGP and PGAs are fault tolerant by nature since it implements by default
 the fault-tolerance mechanism called \emph{graceful degradation}
 \cite{distributed-systems}. 
 
-This chapter is a summary of the obtained results for PGAs and PGP, presenting the study of fault-tolerance in PGAs and PGP
-in order to know if it is feasible to run them in parallel or distributed systems, without having to implement any fault-tolerance mechanism. 
+This chapter is a summary of the main results obtained for PGAs and PGP regarding the study of fault-tolerance and their intrinsic fault-tolerant nature.
 To this aim, we have chosen a fine-grained master-worker model of parallelization \cite{spatially-structured-EAs}. A server, ``the master'', runs the
 main algorithm and hosts the whole population. The server is in charge of sending non-evaluated individuals to workers in
-order to obtain the fitness value of them. This approach is effective because one of the most time-consuming steps of GAs or
+order to obtain their fitness values. This approach is effective because one of the most time-consuming steps of GAs or
 GP is the evaluation --fitness computation-- phase. The master waits until all individuals in generation $n$ are evaluated before
 going to the next generation $n+1$ and run the genetic operations. 
 
@@ -125,10 +122,10 @@ exhibit large amounts of failures, and thus if it is possible to run inside them
 mechanism, PGAs and PGP will be able to exploit any parallel or distributed systems to its maximums.
 
 The rest of the chapter is organized as follows. Section~\ref{related-work} reviews related
-work; 
-section~\ref{experiments-setup} presents the setup of the different
+work; section~\ref{faulttolerance} describes main fault tolerance techniques.
+Section~\ref{experiments-setup} presents the setup of the different
 scenarios and experiments; 
-section~\ref{experiments-results} shows the obtained results and their
+section~\ref{experimentalresults} shows the obtained results and their
 analysis; and, finally, section~\ref{conclusions} concludes the paper with a discussion of the results and future directions.
 
 \section{Background and related work}
@@ -454,7 +451,7 @@ application makes progress, while population size may fluctuates in the
     \caption{\label{fig:trazas2}Host availability for 1 day of the \emph{ucb} trace.}
 \end{figure}
 
-\section{Distribution of Individuals to Workers}
+\subsection{Distribution of Individuals to Workers}
 \label{distribution-individuals}
 
 At the onset of each generation the master sends as equal as possible
@@ -517,6 +514,7 @@ and~\ref{tab:mul11-day1-day2-wilcoxon} present the Wilcoxon analysis of
 the data. The following sections discuss these results in detail.
 
 \section{Experimental results}
+\label{experimentalresults}
 
 \subsection{GP: Even Parity 5}
 
@@ -1043,7 +1041,8 @@ the population is emptied, making very difficult to obtain solutions of similar 
 environment. 
 
 
-\section{Summary of Results}
+\subsection{Summary of Results}
+\label{summary}
 
 Based on two standard applications, EP5 and 3-trap,  we have shown that
 PGP and PGA applications based on the master-worker model running on DGSs
