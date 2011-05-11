@@ -70,16 +70,19 @@ aggregate the computing resources (commodity computers from offices or homes) th
 projects (such as Einstein@Home). 
 
 One of the most important features of DGSs is that they provide large-scale parallel computing capabilities, only for specific
-types of applications --bag of tasks mainly--, at a very low cost. Therefore DGSs can provide parallel computing capabilities for running demanding parallel applications, which is frequently the case for EAs (PEAs).  A good example of the combination of PEAs and DGSs is the MilkyWay@Home project \cite{milkywayathome}. 
+types of applications --bag of tasks mainly--, at a very low cost. Therefore DGSs can provide parallel computing capabilities for running demanding parallel applications, which is frequently the case of EAs.  A good example of the combination of PEAs and DGSs
+% for EAS (PEAs) -> of EAs.- Juanlu
+ is the MilkyWay@Home project \cite{milkywayathome}. 
 
 %%%% Aquí cambiamos el tercio.  
 
 But with large scale comes a higher 
 likelihood that processors suffer a failure \cite{largescale_failures}, interrupting the execution of the algorithm or crashing the whole system (in this 
 chapter we use the term ``failure'' and do not make the subtle distinction between ``failure'' and ``fault'', which
-is not necessary for our purpose).
-
-The above described problem is characteristic of DGSs: computers join the system, contribute some resources and leave it afterwards causing a collective effect known as churn \cite{Stutzbach06Understanding}.
+is not necessary for our purpose). 
+Such an issue is characteristic of DGSs: computers join the system,
+% The above described problem  -> Such an issue -Juanlu
+contribute some resources and leave it afterwards causing a collective effect known as churn \cite{Stutzbach06Understanding}.
 Churn is an inherent property of DGSs and has to be taken into 
 account in the design of applications, as these interruptions (computer powered off, busy CPU, etc.) are interpreted by the application as a failure.   
 
@@ -126,7 +129,7 @@ work; section~\ref{faulttolerance} describes main fault tolerance techniques.
 Section~\ref{experiments-setup} presents the setup of the different
 scenarios and experiments; 
 section~\ref{experimentalresults} shows the obtained results and their
-analysis; and, finally, section~\ref{conclusions} concludes the paper with a discussion of the results and future directions.
+analysis; and, finally, section~\ref{conclusions} concludes the chapter with a discussion of the results and future directions.
 
 \section{Background and related work}
 \label{related-work}
@@ -148,7 +151,7 @@ execution on DGSs ~\cite{vmware-boinc-ipgp}.
 Failures in a distributed system can be local, affecting only a single processor, or they can be
 communication failures, affecting a large number of participating
 processors.  Such failures can disrupt a running application,
-for instance mandating that the application be restarted from scratch.  
+for instance imposing the application to be restarted from scratch.  
 As distributed computing platforms become larger
 and/or lower-cost through the use of less reliable or non-dedicated hardware, 
 failures occur with higher probability~\cite{hardware-failures,hardware-reliability-cost,hardware-reliability}. Failures are, in fact, the common case in
@@ -163,27 +166,23 @@ to message-passing~\cite{starfish-fault-tolerant} or rejuvenation
 frameworks~\cite{rejuvenation}. 
 It is necessary to embed the techniques in the application and the
 algorithms. While some of these techniques may be straightforward to
-implement (e.g., failure detection and restart from scratch), the more
-involved ones typically lead to an increase in software complexity.  Regardless,
+implement (e.g., failure detection or restart from scratch), the most
+common ones typically lead to an increase in software complexity.  Regardless,
 fault tolerance techniques always requires extra computing
 resources and/or time.
 
-Currently available PEA frameworks employ fault tolerant mechanisms to tolerate failures in distributed systems like in DGSs.
+Currently, available PEA frameworks employ fault tolerant mechanisms to tolerate failures in distributed systems such as DGSs.
 For instance ECJ~\cite{ecj}, ParadisEO~\cite{paradiseo}, DREAM~\cite{dream} or Distributed Beagle
 \cite{master-slave-framework-beagle}. These frameworks have distinct features (programming language, parallelism models,
 etc.) that may be considered in combination with DGSs, and provide different techniques to cope with failures:
 \begin{itemize}
     \item ECJ~\cite{ecj} is a Java framework that employs a master-worker scheme to run PEAs using TCP/IP sockets. When a remote
         worker fails, ECJ handles this failure by rescheduling and restarting the computation to another available worker. 
-    \item ParadisEO~\cite{paradiseo} is a C++ framework for running a master-worker model using MPI~\cite{mpi}, PVM~\cite{pvm}, or POSIX threads. Initially, ParadisEO did not provide any fault-tolerance.
-        The developers later implemented a new version on top of the Condor-PVM 
-        resource manager~\cite{condor-pvm} in order to provide a checkpointing feature~\cite{biblia-checkpointing}.
+    \item ParadisEO~\cite{paradiseo} is a C++ framework for running a master-worker model using MPI~\cite{mpi}, PVM~\cite{pvm}, or POSIX threads. Initially, ParadisEO did not provide any fault-tolerance. Later on, developers  implemented a new version on top of the Condor-PVM resource manager~\cite{condor-pvm} in order to provide a checkpointing feature~\cite{biblia-checkpointing}.
         This framework, however, is not the best choice for DGSs because these systems are: (i)~loosely coupled 
         and (ii)~workers may be behind proxies, firewalls, etc. making it difficult to deploy a ParadisEO system. 
-    \item DREAM~\cite{dream} is a Java peer-to-peer (P2P) framework for PEAs that provides a
-        fault-tolerance mechanism called \emph{long-term-memory}~\cite{epidemic-algorithms-fault-tolerance-dream}. This
-        framework is designed specifically for P2P systems. As a result, it cannot be compared directly 
-        with our work since we focus on a master-worker architecture on DGSs. 
+    \item DREAM~\cite{dream} is a Java Peer-to-Peer (P2P) framework for PEAs that provides a
+        fault-tolerance mechanism called \emph{long-term-memory}~\cite{epidemic-algorithms-fault-tolerance-dream}. This framework is designed specifically for P2P systems. As a result, it cannot be compared directly with our work since we focus on a master-worker architecture on DGSs. 
     \item  Distributed BEAGLE~\cite{master-slave-framework-beagle} is a C++ framework that implements the
          master-worker model using TCP/IP sockets as ECJ. Fault-tolerance is provided via a simple time-out
          mechanism: a computation is re-sent to one or more new available workers if
@@ -192,16 +191,16 @@ etc.) that may be considered in combination with DGSs, and provide different tec
 \noindent
 While these PEA frameworks provide fault-tolerant features, the relationship between
 fault tolerance and specific features of PEAs has not been studied.
+% Este último comentario me suena un poco extraño. Tal vez habría que justificarlo mejor. - Juanlu
 
 So far, EA researchers have not employed massively DGSs. Nevertheless, there are several projects using DGSs like 
 the MilkyWay@Home project \cite{milkywayathome} which uses GAs to create an accurate 3D model of the Milky way, a ported version 
 of LilGP \cite{maeb-2007-boinc}(a framework for GP \cite{lilgp}) to one of the most employed DGSs, BOINC
-\cite{boinc-paper}, or the \emph{custom execution environment} facility proposed and implemented by Lombraña et. al. \cite{ibergrid-2008,pdp-2009} 
+\cite{boinc-paper}, or the \emph{custom execution environment} facility proposed and implemented by Lombraña et. al. in \cite{ibergrid-2008,pdp-2009} 
 for BOINC.
 
 Other EA researchers have focused their attention on P2P systems \cite{juanlu-ppsn}, which are very similar to DGSs because
-the computing elements are also desktop computers in its majority. However these systems are different because there is not a
-central server as in DGSs.
+the computing elements are also desktop computers in its majority. However these systems are different because there is not a central server as in DGSs.
 
 In all the described proposals --to the best of our knowledge-- none of them have specifically
 addressed the problem of failures within PGAs or PGP. Nevertheless, some of those solutions internally employ some fault-tolerance
@@ -209,20 +208,21 @@ mechanisms. In this sense, only Laredo et al. have analyze the resilience to fai
 in \cite{laredo08:churn}, following the Weibull degradation of a P2P system (failures are the host-churn behavior of these
 systems as well as DGSs) proposed by Stutzbach and Rejaie in \cite{Stutzbach06Understanding}. 
 Therefore, PGAs or PGP have not been analyzed before under real host availability traces
-(a.k.a. host-churn). Hence, this paper assesses fault tolerance in PGAs and PGP using host-churn data collected in
-three real-world DGSs \cite{traces-dgc}.
-Therefore, the key contribution is the fully characterization of PGAs and PGP from the point of view of fault-tolerance with the
+(a.k.a. host-churn). Hence, this chapter assesses fault tolerance in PGAs and PGP using host-churn data collected in three real-world DGSs \cite{traces-dgc}.
+Therefore, the key contribution of this chapter is the full characterization of PGAs and PGP from the point of view of fault-tolerance with the
 aim of studying if PGAs can be run in parallel or distributed systems without using any fault-tolerance mechanism. 
 
 \section{Fault Tolerance}
 \label{faulttolerance}
 
+\emph{Fault tolerance} can be defined as the ability of a system to behave in a
+well-defined manner once a failure occurs. In this chapter we only take
+into account failures at the process level. A complete description of
+failures in distributed systems is beyond the scope of our discussion. In this section, we describe different failure models as well as different techniques to circumvent failures.
+
 \subsection{Failure Models}
 
-\emph{Fault tolerance} can be defined as the ability of a system to behave in a
-well-defined manner once a failure occurs. In this paper we only take
-into account failures at the process level. A complete description of
-failures in distributed systems is beyond the scope of our discussion.
+
 According to Ghosh~\cite{distributed-systems}, failures can be classified
 as follows: crash, omission, transient, Byzantine, software, temporal,
 or security failures.
@@ -250,7 +250,7 @@ schemes can be employed (ring, multi-dimensional grids, etc.).
 In light of previous studies~\cite{spatially-structured-EAs,modelo-islas2}
 and taking into account the specific parallel features
 of DGSs~\cite{dgc-caracteristicas,traces-dgc}, we focus on
-parallelization at the individual level. Indeed, DGSs are
+parallelization at the individual level. In fact, DGSs are
 loosely-coupled platforms with volatile resources, and therefore
 ideally suited to and widely used for embarrassingly parallel
 master-worker applications. Furthermore parallelization at the
@@ -364,7 +364,7 @@ In this approach the master does not attempt to detect failures and
 no fault tolerance technique is used. The master waits a time $T$ per
 generation, and proceeds to the next generation with the available individuals at that time,
 likely losing individuals at each generation. The hope is that the
-loss of individuals is not (significantly) detrimental to the achieved,
+loss of individuals is not (significantly) detrimental to the achieved results,
 while the overhead of resending
 lost individuals for recomputation is not incurred.
 
