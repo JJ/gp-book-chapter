@@ -371,25 +371,24 @@ lost individuals for recomputation is not incurred.
 \section{Experimental methodology}
 \label{experiments-setup}
 
-All the experiments presented in this chapter are based on simulations. Simulations allows us to perform a statistically
+All the experiments presented in this chapter are based on simulations. Simulations allow us to perform a statistically
 significant number of experiments in a wide range of realistic scenarios. Furthermore, our experiments are repeatable, via
-``replying'' host availability trace data collected from real-world DG platforms \cite{traces-dgc}, so that fair comparison
-between simulated application execution is possible.
+``reproduction'' of host availability trace data collected from real-world DG platforms \cite{traces-dgc}, so that fair comparisons
+between simulated experiments are possible.
 
-\subsection{Application and failure model}
+\subsection{Experiments and failure model}
 
-We perform experiments for one GA and one GP well-known problems. The GP problem is the even parity 5 (EP5) problem, which
-tries to build a program capable of calculating the parity of a set of 5 bits. For the GA problem we used the 3-trap instance
-\cite{ackley:trap}, which is a piecewise-linear function defined on unitation (the number of ones in a binary string).
+We perform experiments for a GA and a GP well-known problems. The GP problem is the even parity 5 (EP5) which
+tries to build a program capable of calculating the parity of a set of 5 bits. In the case of the GA problem, we use a 3-trap instance
+\cite{ackley:trap} which is a piecewise-linear function defined on unitation (the number of ones in a binary string).
 
-Two kind of experiments are carried out:
+In every case, two kind of experiments are carried out:
 \begin{enumerate}
     \item for the failure-free case (i.e. assuming no worker failures occur)
-    \item replying and simulating failure traces from real-world DGSs.
+    \item reproducing and simulating failure traces from real-world DGSs.
 \end{enumerate}
 
-In the failure free case the available computing power is kept steady throughput execution, while in the other cases it
-varies among generations.
+In the failure free case the available number of computing nodes is kept steady throughout the execution, while in the second case the number of nodes vary along the generations.
 
 The simulation of host availability in the DG is performed based
 on three real-world traces of host availability that were measured
@@ -421,24 +420,18 @@ methods and the traces, and Tab.~\ref{tab:traces-summary} for a summary of its m
 %\end{scriptsize}
 \end{table}
 
-Figure~\ref{fig:trazas2} shows example availability data from the \emph{ucb}
-trace: the number of available hosts in the platform versus time over 24
-hours. The figure shows the typical churn phenomenon, with available hosts
-becoming unavailable and later becoming available again.  We performed
-our experiments over such 24-hour segments of our availability traces.
+Figure~\ref{fig:trazas2} shows an example of available data from the \emph{ucb}
+trace: the number of available hosts in the platform during 24
+hours time. The figure depicts the typical churn phenomenon, with available hosts
+becoming unavailable and later becoming available again.  Experiments were performed over such 24-hour segments.
 
-We use two different scenarios when simulating host failures based
+In addition, we use two different scenarios when simulating host failures based
 on trace data. In the first scenario a stringent assumption is used: hosts
-that become unavailable never become available again. An example
-of the number of hosts throughout time for this scenario is shown in
-Figure~\ref{fig:trazas2}, as the curve ``trace without return.''  For this
-scenario, we arbitrarily select the time within each 24-hour segment with
-the largest number of available hosts as the beginning of application
-execution.  In the second scenario hosts can become available again after a
+that become unavailable never become available again (i.e. the system degrades). An example  is shown in
+Figure~\ref{fig:trazas2}, as the curve ``trace without return.''  In such an scenario, we have selected as a starting point policy the moment in which a largest number of hosts are available.  In the second scenario hosts can become available again after a
 failure and
 reused by the application. This phenomenon is called ``churn,'' and 
-is typical of what is implemented in real-world DG systems. For
-this scenario, application execution starts at an arbitrary time in
+is inherent to real-world DG systems. In this case, application execution starts at an arbitrary time in
 the segment.  Note that in the first ``no churn scenario,'' population
 size (i.e., the number of individuals) becomes progressively smaller as the
 application makes progress, while population size may fluctuates in the
@@ -454,13 +447,12 @@ application makes progress, while population size may fluctuates in the
 \subsection{Distribution of Individuals to Workers}
 \label{distribution-individuals}
 
-At the onset of each generation the master sends as equal as possible
-numbers of individuals to each worker.  This is because the master assumes
+At the onset of each generation the master sends an equal numbers of individuals to each worker.  This is because the master assumes
 homogeneous workers and thus strives for perfect load-balancing. We call
-this number $I$. Thus, if a worker does not return individual evaluations
-before time $T$, then those $I$ individuals are considered lost. In the
+this number $I$. Whenever a worker does not return the evaluated individuals
+within a time interval $T$, then those $I$ individuals are considered lost. In the
 fault-tolerant approach in Section~\ref{strategies}, such individuals
-are simply resent to other workers. In our non-fault-tolerant approach,
+are simply re-sent to other workers. In our non-fault-tolerant approach,
 these individuals are simply lost and do not participate in the
 subsequent generations. 
 
@@ -474,12 +466,12 @@ initial population size is never exceeded by new extra individuals,
 the remaining workers will continue evaluating $I$ individuals each,
 regardless of the number of failures or newly available hosts.
 
-Regardless of the approach in use, if there is host churn then population
-size can be increased throughout application execution due to newly
+Regardless of the approach in use, if there is host churn then the population
+size can be increased at run-time due to the newly
 available hosts. We impose the restriction that the master never overcomes
-the specified population size. This may leave some workers idle in case 
-a large number of workers become available. In this case, it would be 
-interesting to re-adjust the number $I$ of individuals sent to each worker 
+a pre-specified population size. This may leave some workers idle whenever
+a large number of workers become available. In such a case, it would be 
+interesting to re-adjust the number of individuals $I$ sent to each worker 
 so as to utilize all the available workers. We leave such load-balancing 
 study outside the scope of this work and maintain $I$ constant.
 
@@ -487,10 +479,10 @@ In the churn scenario, one important question is: what work is assigned
 to newly available workers? When a new worker appears, the master
 simply creates $I$ new random individuals and increases the population
 size accordingly (provided it remains below the initial population size). 
-These new individuals are sent to the new worker. Note that when there are 
+These new individuals are sent to the new worker. Note that whenever there are 
 no available workers at all, the master loses all its individuals except the 
 best one thanks to the elitism parameter. Then, the master proceeds to the 
-next generation by waiting the specified time  $T$ for newly available workers.
+next generation by waiting a time  $T$ for newly available workers.
 
 \begin{figure}
     \begin{center}
@@ -1060,24 +1052,23 @@ is that in both cases we have \emph{graceful degradation}.
 
 \section{Conclusions} 
 \label{conclusions}
-In this chapter we have analyzed the behavior of Parallel Genetic
-Programming (PGP) and Parallel Genetic Algorithms executing in distributed platforms with
-high failure rates, with the goal of characterizing the inherent fault
-tolerance capabilities of the PGP paradigm.  We have used two well-known
-problems and, to the best of our knowledge, for the first time in this
-context we have used host availability traces collected on real-world
-Desktop Grid (DG) platforms.
+In this chapter we have analyzed the behavior of a parallel approach to Genetic
+Programming and Genetic Algorithms when executed in a distributed platform with
+high failure rate. The aim is characterizing the inherent fault
+tolerance capabilities of the evolutionary computation paradigm. To that end, we have used two well-known problems and for the first time in this
+context (to the best of our knowledge) we have used host availability traces collected on real-world Desktop Grid platforms.
 
-Our main conclusion is that PGP and PGA inherently provides \emph{graceful
-degradation} without the need for fault tolerance techniques.
+Our main conclusion is that, whenever executed in parallel, either GP and GA provide a fault tolerant mechanism known as \emph{graceful degradation}. 
 
-We have presented a simple method for tolerating high host losses,
-which consists of increasing the initial population size. 
+We have also presented a simple method for tolerating faults in especially challenging scenarios with high host losses, which consists of increasing the initial population size. 
 
+
+%%Repasar último párrafo - Juanlu
 To the best of our knowledge, this is the first time that PGP and PGAs are
 characterized from a fault-tolerance perspective.  We contend that our
-conclusions can be extended to Parallel Evolutionary Algorithms (PEAs)
+conclusions can be extended to other Parallel Evolutionary Algorithms 
 via similar experimental validation. 
+
 \bibliographystyle{plain}
 \bibliography{daniel-lombrana,enlaces,articulos,gp-bibliography,jp2008,juanlu,smt,bib_henri}
 \end{document}
