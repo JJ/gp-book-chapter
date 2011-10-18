@@ -15,6 +15,7 @@
 \usepackage{rotating}
 \usepackage{subfigure}
 \usepackage{epsfig}
+\usepackage[center]{caption}
 %\usepackage[bottom]{footmisc}
 
 % see the list of further useful packages
@@ -60,7 +61,8 @@ execution time, and (ii) the algorithm itself may suffer of structural changes a
 % the structural changes applied to the algorithm when deployed in parallel, which allow them to outperform the sequential counterpart -> the algorithm itself may suffer of structural changes allowing to outperform the sequential counterpart - Juanlu
 (see for instance \cite{spatially-structured-EAs}).
 
-Parallel algorithms, and thus parallel GAs and GP, must be run on platforms that consists of multiple computing elements or \emph{processors}. Although supercomputers can be employed, usually comodity clusters and distributed systems are used instead, due to both good performance and cheaper prices.  One of the most popular distributed systems nowadays are the  Desktop Grid Systems (DGSs). 
+Parallel algorithms, and thus parallel GAs and GP, must be run on platforms that consists of multiple computing elements or
+\emph{processors}. Although supercomputers can be employed, usually commodity clusters and distributed systems are used instead, due to both good performance and cheaper prices.  One of the most popular distributed systems nowadays are the  Desktop Grid Systems (DGSs). 
 The term ``desktop grid'' is used to refer to distributed networks of
 heterogeneous single systems that contribute idle processor cycles for computing. 
 
@@ -400,12 +402,10 @@ for about 1.5 months. The \emph{entrfin} trace was collected for 275 hosts
 at the San Diego Supercomputer Center for about 1 month. The \emph{xwtr}
 trace was collected for 100 hosts at the Universit\'e Paris-Sud for
 about 1 month. See~\cite{traces-dgc} for full details on the measurement
-methods and the traces, and Tab.~\ref{tab:traces-summary} for a summary of its main features.
+methods and the traces, and Table~\ref{tab:traces-summary} for a summary of its main features.
 
 \begin{table}[h]
-    \center
-    \caption{\label{tab:traces-summary}Features of Desktop Grid Traces}
-    %\begin{scriptsize}
+    \centering
     \begin{tabular}{|l|c|c|l|}
         \hline
         Trace & Hosts & Time in months & Place\\
@@ -417,7 +417,7 @@ methods and the traces, and Tab.~\ref{tab:traces-summary} for a summary of its m
         \emph{xwtr} & 100 & 1 & Universit\'e Paris-Sud\\
         \hline
     \end{tabular}
-%\end{scriptsize}
+    \caption{\label{tab:traces-summary}Features of Desktop Grid Traces}
 \end{table}
 
 Figure~\ref{fig:trazas2} shows an example of available data from the \emph{ucb}
@@ -437,10 +437,9 @@ size (i.e., the number of individuals) becomes progressively smaller as the
 application makes progress, while population size may fluctuates in the
 ``churn scenario.''
 
-\begin{figure}
-    \begin{center}
+\begin{figure}[h]
+    \centering
         \epsfig{figure=img/traza-ucb-1994-02-28.ps, angle=-90, width=\linewidth}
-    \end{center}
     \caption{\label{fig:trazas2}Host availability for 1 day of the \emph{ucb} trace.}
 \end{figure}
 
@@ -484,12 +483,6 @@ no available workers at all, the master loses all its individuals except the
 best one thanks to the elitism parameter. Then, the master proceeds to the 
 next generation by waiting a time  $T$ for newly available workers.
 
-\begin{figure}
-    \begin{center}
-        \epsfig{figure=img/population_length-est.ps, angle=-90, width=\linewidth}
-    \end{center}
-    \caption{\label{fig:population-length}Population size vs. generation.}
-\end{figure}
 
 \subsection{Experimental Procedure}
 \label{experiments-results}
@@ -502,7 +495,7 @@ of the results using the Kolgomorov-Smirnov and Shapiro-Wilk tests,
 finding out that all results are non-normal. Therefore, to compare two
 samples, the failure-free case with each trace (with and without churn),
 we used the Wilcoxon test. Table~\ref{tab:parity5-day1-day2-wilcoxon}
-and~\ref{tab:mul11-day1-day2-wilcoxon} present the Wilcoxon analysis of
+and~\ref{tab:trap3-day1-day2-wilcoxon} present the Wilcoxon analysis of
 the data. The following sections discuss these results in detail.
 
 \section{Experimental results}
@@ -516,9 +509,7 @@ Koza-I/II standard~\cite{koza:book}.  See Table~\ref{tab:gp-parameters}
 for all details.
 
 \begin{table}
-    \caption{Parameters of selected problems.}
-    \begin{center}
-        %\begin{scriptsize}
+    \centering
 \begin{tabular}{|l|c|}         
         \cline{2-2}
         \multicolumn{1}{c|}{} & EP5 \\
@@ -533,9 +524,7 @@ for all details.
         \hline ADFs & Yes \\
         \hline     
     \end{tabular} 
-%\end{scriptsize}
-\end{center}
-\label{tab:gp-parameters} 
+    \caption{\label{tab:gp-parameters}Parameters of selected problems.}
 \end{table}
 
 Even if the required time for fitness evaluation for
@@ -552,6 +541,13 @@ of the number of individuals in each generation for the EP5 problem when simulat
 1} and \emph{Day 2}, randomly selected out of each of three of our traces, \emph{entrfin}, \emph{ucb}, and \emph{xwtr}, for
 a total of 6 experiments.
 
+\begin{figure}[h]
+    \centering
+        \epsfig{figure=img/population_length-est.ps, angle=-90, width=\linewidth}
+    \caption{\label{fig:population-length}Population size vs. generation.}
+\end{figure}
+
+
 Table~\ref{tab:fitness} shows a summary of the obtained fitness for the EP5 problems and of the fraction of lost individuals
 by the end of application execution.  The first row of the table shows
 fitness values assuming a failure-free case.  The fraction of lost
@@ -563,27 +559,6 @@ population after 25 generations (96.15\% loss); and the \emph{xwtr}
 exhibits more moderate losses, with overall 23.52\% and 12.08\% loss
 after 51 generations for \emph{Day 1} and \emph{Day 2}, respectively.
 
-\begin{table}[h]
-    \caption{Obtained fitness for EP5}
-\begin{center}
-    %\begin{scriptsize}
-    \begin{tabular}{|c|c|c|}
-        \cline{3-3}
-        \multicolumn{2}{c|}{} & EP5 \\
-        \hline Trace & Loss(\%) & Fitness \\             
-        \hline Error free & 0.00 & 2.56  \\            
-        \hline \emph{entrfin} (\emph{\emph{Day 1}}) & 48.02 & 3.58 \\
-        \hline \emph{entrfin} (\emph{Day 2}) & 13.04 & 2.44 \\
-        \hline \emph{ucb} (\emph{\emph{Day 1}}) & 68.00 & 3.98 \\
-        \hline \emph{ucb} (\emph{Day 2}) & 96.15 & 5.13 \\
-        \hline \emph{xwtr} (\emph{\emph{Day 1}}) & 23.52 & 2.78 \\           
-        \hline \emph{xwtr} (\emph{Day 2}) & 12.08 & 2.61 \\           
-        \hline     
-\end{tabular}     
-%\end{scriptsize}
-\end{center}
-\label{tab:fitness}
-\end{table}
 
 The obtained fitness in the failure-free case is 2.56, and
 it ranges from 2.44 to 5.13 for the failure-prone cases (see
@@ -602,6 +577,25 @@ the obtained fitness is not significantly far from the failure-free case.
 Similarly, the \emph{xwtr} trace with losses under 25\% leads to a
 fitness that it is not significantly different from the failure-free case.
 
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \cline{3-3}
+        \multicolumn{2}{c|}{} & EP5 \\
+        \hline Trace & Loss(\%) & Fitness \\             
+        \hline Error free & 0.00 & 2.56  \\            
+        \hline \emph{entrfin} (\emph{\emph{Day 1}}) & 48.02 & 3.58 \\
+        \hline \emph{entrfin} (\emph{Day 2}) & 13.04 & 2.44 \\
+        \hline \emph{ucb} (\emph{\emph{Day 1}}) & 68.00 & 3.98 \\
+        \hline \emph{ucb} (\emph{Day 2}) & 96.15 & 5.13 \\
+        \hline \emph{xwtr} (\emph{\emph{Day 1}}) & 23.52 & 2.78 \\           
+        \hline \emph{xwtr} (\emph{Day 2}) & 12.08 & 2.61 \\           
+        \hline     
+\end{tabular}     
+    \caption{\label{tab:fitness}Obtained fitness for EP5}
+\end{table}
+
+
 We conclude that, for the EP5 problem, it is possible to tolerate
 a gradual loss of up to 25\% of the individuals without sacrificing
 solution quality. This is the case without using any fault tolerance
@@ -613,70 +607,15 @@ idea is to increase the initial population size (in our case by 10,
 20, 30, 40, or 50\%). The goal is to compensate for lost individuals by
 starting with a larger population.
 
-Increasing population likely also affects the fitness in the failure-free
-case.  We simulated the EP5 problem in the failure-free case with a
-population size increased by 10, 20, 30, 40 and 50\%. Results are shown
-in Figure~\ref{fig:ep5-11m-fitness-effort}(a), which plots the evolution
-of fitness versus the ``computing effort.'' The computing effort is
-defined as the total number of evaluated individuals nodes so far (we must bear in mind that GP individuals are variable size
-trees), i.e., from
-generation 1 to generation $G$, as described in~\cite{plague}.  We have
-fixed a maximum computing effort which corresponds to 51 generations
-and the population size introduced by Koza~\cite{koza:book}, which is
-employed in this work. Figure~\ref{fig:ep5-11m-fitness-effort}(a) shows
-that population sizes $M>4,000$ for a similar effort obtain worse
-fitness values when compared with the original $M=4,000$ population size. Thus, for static populations,
-increasing the population size is not a good option, provided a judicious
-population size is chosen to begin with. Nevertheless, we content that
-such population increase could be effective in a failure-prone case.
-
 \begin{table}[h]
-    \caption{EP5 fitness with increased population}
-\begin{center}
-    %\begin{scriptsize}
-    \begin{tabular}{|c|c|c|c|c|c|c|}
-        \hline
-        \multicolumn{7}{|c|}{Error Free fitness = 2.56} \\
-        \hline
-        \hline Traces  & \emph{entrfin} & \emph{ucb} & \emph{xwtr} & \emph{entrfin} & \emph{ucb} & \emph{xwtr}\\
-        \hline +0\%    & 3.58 & 3.98 & 2.78 &  2.44 & 5.13 & 2.61   \\
-        \hline +10\%   & 3.52 & 3.75 & 2.40 &  2.65 & 5.21 & 2.66   \\
-        \hline +20\%   & 3.01 & 3.61 & 2.32 &  2.29 & 4.68 & 2.42   \\ 
-        \hline +30\%   & 3.13 & 3.33 & 2.46 &  2.36 & 4.50 & 2.33   \\
-        \hline +40\%   & 2.80 & 3.35 & 2.15 &  2.01 & 4.71 & 1.96   \\ 
-        \hline +50\%   & 2.85 & 3.17 & 2.13 &  1.92 & 4.47 & 2.24   \\
-        \hline
-    \end{tabular}
-%\end{scriptsize}
-\end{center}
-    \label{tab:parity5-fitness-pct}
-\end{table}
-
-Table~\ref{tab:parity5-fitness-pct} shows results for the increased
-initial population size, based on simulations for the \emph{Day 1}
-and \emph{Day 2} periods of all three traces.  Overall, increasing the
-initial population size is an effective solution to tolerate failures
-while preserving (and even improving!) solution quality. For instance,
-for the \emph{Day 1} period of the \emph{entrfin} trace, with host losses
-at 48.02\%, starting with 50\% extra individuals ensures solution quality
-on par with the failure-free case.  Similar results are obtained for the
-\emph{entrfin} and \emph{xwtr} two periods. Furthermore, for the \emph{Day
-2} period of traces \emph{entrfin} and \emph{xwtr}, adding 40\% or 50\%
-extra individuals results in obtaining solutions of better quality than in
-the failure-free case. However, the increase of the initial population is
-not enough for the \emph{ucb} trace as its losses are as high as 96.15\%
-and 68\% for \emph{Day 1} and \emph{Day 2}, respectively. Note that in these
-difficult cases the fault-tolerant approach does not succeed at all.
-
-\begin{table*}
-    \caption{EP5 fitness comparison between failure-prone and failure-free cases using Wilcoxon test (\emph{Day 1 and 2}) -- ``not significantly
-    different'' means fitness quality comparable to the failure-free case.}
+    \centering
     \begin{tiny}
-\begin{center}
     \begin{tabular}{|l| l c l c |c| c l c|}
         \multicolumn{9}{c}{} \\[1ex]
-        \multicolumn{9}{c}{Error Free fitness = 2.56 } \\
-        \hline \hline
+        \multicolumn{9}{c}{\textbf{Error Free fitness = 2.56} } \\
+        \hline 
+        \multicolumn{9}{c}{\textbf{\emph{Results without Host Churn}} } \\
+        \hline 
         \multicolumn{1}{c}{}& \multirow{2}{*}{Trace} &\multirow{2}{*}{Fitness} & \multicolumn{1}{c}{Wilcoxon} &
         \multicolumn{1}{c}{Significantly} & \multicolumn{1}{c}{}&\multirow{2}{*}{Fitness} &\multicolumn{1}{c}{Wilcoxon}
         &\multicolumn{1}{c}{Significantly} \\
@@ -723,10 +662,71 @@ difficult cases the fault-tolerant approach does not succeed at all.
  
 \hline
 \end{tabular}
-\end{center}
+    \caption{\label{tab:parity5-day1-day2-wilcoxon}EP5 fitness comparison between failure-prone and failure-free cases using Wilcoxon test (\emph{Day 1 and 2}) -- ``not significantly
+    different'' means fitness quality comparable to the failure-free case.}
 \end{tiny}
-    \label{tab:parity5-day1-day2-wilcoxon}
-\end{table*}
+\end{table}
+
+
+Increasing population likely also affects the fitness in the failure-free
+case.  We simulated the EP5 problem in the failure-free case with a
+population size increased by 10, 20, 30, 40 and 50\%. Results are shown
+in Figure~\ref{fig:ep5-11m-fitness-effort}, which plots the evolution
+of fitness versus the ``computing effort.'' The computing effort is
+defined as the total number of evaluated individuals nodes so far (we must bear in mind that GP individuals are variable size
+trees), i.e., from
+generation 1 to generation $G$, as described in~\cite{plague}.  We have
+fixed a maximum computing effort which corresponds to 51 generations
+and the population size introduced by Koza~\cite{koza:book}, which is
+employed in this work. Figure~\ref{fig:ep5-11m-fitness-effort} shows
+that population sizes $M>4,000$ for a similar effort obtain worse
+fitness values when compared with the original $M=4,000$ population size. Thus, for static populations,
+increasing the population size is not a good option, provided a judicious
+population size is chosen to begin with. Nevertheless, we content that
+such population increase could be effective in a failure-prone case.
+
+\begin{figure}[h]
+    \centering
+        \epsfig{figure=img/effort-fitness-ep5-error-free.ps, angle=-90, width=\linewidth}
+        \caption{\label{fig:ep5-11m-fitness-effort}Fitness vs. Effort with increased population for failure-free experiments}
+\end{figure}
+
+
+Table~\ref{tab:parity5-fitness-pct} shows results for the increased
+initial population size, based on simulations for the \emph{Day 1}
+and \emph{Day 2} periods of all three traces.  Overall, increasing the
+initial population size is an effective solution to tolerate failures
+while preserving (and even improving!) solution quality. For instance,
+for the \emph{Day 1} period of the \emph{entrfin} trace, with host losses
+at 48.02\%, starting with 50\% extra individuals ensures solution quality
+on par with the failure-free case.  Similar results are obtained for the
+\emph{entrfin} and \emph{xwtr} two periods. Furthermore, for the \emph{Day
+2} period of traces \emph{entrfin} and \emph{xwtr}, adding 40\% or 50\%
+extra individuals results in obtaining solutions of better quality than in
+the failure-free case. However, the increase of the initial population is
+not enough for the \emph{ucb} trace as its losses are as high as 96.15\%
+and 68\% for \emph{Day 1} and \emph{Day 2}, respectively. Note that in these
+difficult cases the fault-tolerant approach does not succeed at all.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline
+        \multicolumn{7}{|c|}{Error Free fitness = 2.56} \\
+        \hline
+        \hline Traces  & \emph{entrfin} & \emph{ucb} & \emph{xwtr} & \emph{entrfin} & \emph{ucb} & \emph{xwtr}\\
+        \hline +0\%    & 3.58 & 3.98 & 2.78 &  2.44 & 5.13 & 2.61   \\
+        \hline +10\%   & 3.52 & 3.75 & 2.40 &  2.65 & 5.21 & 2.66   \\
+        \hline +20\%   & 3.01 & 3.61 & 2.32 &  2.29 & 4.68 & 2.42   \\ 
+        \hline +30\%   & 3.13 & 3.33 & 2.46 &  2.36 & 4.50 & 2.33   \\
+        \hline +40\%   & 2.80 & 3.35 & 2.15 &  2.01 & 4.71 & 1.96   \\ 
+        \hline +50\%   & 2.85 & 3.17 & 2.13 &  1.92 & 4.47 & 2.24   \\
+        \hline
+    \end{tabular}
+    \caption{\label{tab:parity5-fitness-pct}EP5 fitness with increased population}
+\end{table}
+
+
 
 From these results we conclude that increasing the initial population
 size is effective to maintain fitness quality at the level of that in
@@ -737,12 +737,6 @@ initial population size can be chosen accordingly.  Also, one must keep
 in mind that an increased population size implies longer execution time
 for each generation since more individuals must be evaluated.
 
-\begin{figure*}
-    \centering
-        \subfigure[EP5]{\epsfig{figure=img/effort-fitness-ep5-error-free.ps, angle=-90, width=8cm}}
-    \label{fig:ep5-11m-fitness-effort}
-    \caption{Fitness vs. Effort with increased population for failure-free experiments}
-\end{figure*}
 
 \subsubsection{EP5: Results with churn}
 
@@ -753,6 +747,23 @@ that the population size is capped at 4,000 individuals (according to
 Table~\ref{tab:gp-parameters}) and that each worker is assigned $I$
 individuals. Such individuals are randomly generated by the master when
 assigned to a newly available worker.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|c|c|c|c|c|c|}
+        \hline Trace                       & \multicolumn{5}{c|}{Hosts}                                 & \multicolumn{1}{c|}{Fitness} \\     
+        \hline                             & Min. & Median & Mean   &  Max.  &  Var. ($s^2$)  &  EP5              \\
+        \hline Error free                  & -       & -      & -      &  -        &  -                 & 2.56     \\            
+        \hline \emph{entrfin} (\emph{Day 1})  & 92      & 160    & 157.50 &  177      &  179.33            & 2.86     \\ 
+        \hline \emph{entrfin} (\emph{Day 2})  & 180     & 181    & 181.30 &  183      &  0.75              & 2.75     \\ 
+        \hline \emph{ucb} (\emph{Day 1})      & 0       & 1      & 1.51   &  9        &  2.21              & 8.87     \\
+        \hline \emph{ucb} (\emph{Day 2})      & 0       & 2      & 2.57   &  7        &  4.29              & 5.89     \\
+        \hline \emph{xwtr} (\emph{Day 1})     & 28      & 29     & 28.92  &  29       &  0.07              & 2.56     \\           
+        \hline \emph{xwtr} (\emph{Day 2})     & 86      & 86     & 86     &  86       &  0                 & 2.52     \\           
+        \hline     
+\end{tabular}     
+    \caption{\label{tab:fitness-with-return}Obtained fitness for EP5 with host churn}
+\end{table}
 
 Table~\ref{tab:fitness-with-return} shows the obtained fitness for the EP5
 problem on all traces. It also shows the host churn represented by the
@@ -766,26 +777,6 @@ and \emph{Day 2}, the obtained fitness value is comparable to that in
 the failure-free case  (see Table~\ref{tab:parity5-day1-day2-wilcoxon}
 for statistical significance).
 
-\begin{table*}
-    \caption{Obtained fitness for EP5 with host churn}
-\begin{center}
-    %\begin{scriptsize}
-    \begin{tabular}{|l|c|c|c|c|c|c|}
-        \hline Trace                       & \multicolumn{5}{c|}{Hosts}                                 & \multicolumn{1}{c|}{Fitness} \\     
-        \hline                             & Min. & Median & Mean   &  Max.  &  Var. ($s^2$)  &  EP5              \\
-        \hline Error free                  & -       & -      & -      &  -        &  -                 & 2.56     \\            
-        \hline \emph{entrfin} (\emph{Day 1})  & 92      & 160    & 157.50 &  177      &  179.33            & 2.86     \\ 
-        \hline \emph{entrfin} (\emph{Day 2})  & 180     & 181    & 181.30 &  183      &  0.75              & 2.75     \\ 
-        \hline \emph{ucb} (\emph{Day 1})      & 0       & 1      & 1.51   &  9        &  2.21              & 8.87     \\
-        \hline \emph{ucb} (\emph{Day 2})      & 0       & 2      & 2.57   &  7        &  4.29              & 5.89     \\
-        \hline \emph{xwtr} (\emph{Day 1})     & 28      & 29     & 28.92  &  29       &  0.07              & 2.56     \\           
-        \hline \emph{xwtr} (\emph{Day 2})     & 86      & 86     & 86     &  86       &  0                 & 2.52     \\           
-        \hline     
-\end{tabular}     
-%\end{scriptsize}
-\end{center}
-\label{tab:fitness-with-return}
-\end{table*}
 If the variance of the number of available hosts for a trace is zero,
 then the trace is equivalent to the failure-free case, as the hosts
 do not experience any failure. The obtained fitness should then
@@ -835,8 +826,7 @@ All settings are summarized in Table \ref{table:parameters}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[htbp]
-\centering
-\caption{Parameters of the experiments\label{table:parameters}}
+    \centering
 {\footnotesize
 \begin{tabular}{r l}
 \multicolumn{2}{l}{\textbf{Trap instance}}\\
@@ -857,6 +847,7 @@ Mutation & Bit-Flip mutation, $p_m = \frac{1}{L}$\\
 %xxtr & \\
 %
 \end{tabular}
+\caption{Parameters of the experiments\label{table:parameters}}
 }
 \end{table}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -865,15 +856,17 @@ In order to analyze the results with confidence, data has been statistically ana
 (each experiment has been run 100
 times). Firstly, we analyzed the normality of the data using the Kolgomorov-Smirnov and Shapiro-Wilk tests \cite{statistics-r},
 obtaining as a result that all data are non-normal. Thus, to compare two samples, the error-free case with each trace, we used the Wilcoxon test
-(Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows the Wilcoxon analysis of the data). 
+(Table \ref{tab:trap3-day1-day2-wilcoxon} shows the Wilcoxon analysis of the data). 
 
 \begin{table}
+    \centering
     \begin{tiny}
-\begin{center}
     \begin{tabular}{|l| l c l c |c| c l c|}
         \multicolumn{9}{c}{} \\[1ex]
-        \multicolumn{9}{c}{Error Free fitness = 23.56} \\
-        \hline \hline
+        \multicolumn{9}{c}{\textbf{Error Free fitness = 23.56}} \\
+        \hline 
+        \multicolumn{9}{c}{\textbf{\emph{Results without Host Churn}}} \\
+        \hline 
         \multicolumn{1}{c}{}& \multirow{2}{*}{Trace} &\multirow{2}{*}{Fitness} & \multicolumn{1}{c}{Wilcoxon} &
         \multicolumn{1}{c}{Significantly} & \multicolumn{1}{c}{}&\multirow{2}{*}{Fitness} &\multicolumn{1}{c}{Wilcoxon}
         &\multicolumn{1}{c}{Significantly} \\
@@ -920,25 +913,23 @@ obtaining as a result that all data are non-normal. Thus, to compare two samples
  
 \hline
 \end{tabular}
-\end{center}
 \end{tiny}
-    \caption{3-Trap fitness comparison between error-prone and error-free cases using Wilcoxon test (\emph{Day 1 and 2}) -- ``not significantly
+    \caption{\label{tab:trap3-day1-day2-wilcoxon}3-Trap fitness comparison between error-prone and error-free cases using Wilcoxon test (\emph{Day 1 and 2}) -- ``not significantly
     different'' means fitness quality comparable to the error-free case.}
-    \label{tab:trap3-day1-day2-wilcoxon}
 \end{table}
 
-Fig. \ref{fig:population-length} shows, for the worst-case scenario, how the population decreases as failures occur in the
+Figure \ref{fig:population-length} shows, for the worst-case scenario, how the population decreases as failures occur in the
 system. As explained before, two different 24-hours periods randomly selected are shown, denoted by Day 1 and Day 2,
 for the three employed traces of the experiments. Thus, a total of 6 different experiments, one per trace and day period,
 were run with the 3-Trap function problem. 
 
-Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows a summary of the obtained results for the experiments. From all the traces,
+Table \ref{tab:trap3-day1-day2-wilcoxon} shows a summary of the obtained results for the experiments. From all the traces,
 the \emph{ucb}  has obtained the worst fitness 23.22 and 23.09 (respectively for both periods Day 1 and Day 2). The reason is that this trace in the first day loses a 64\% of the population and in the second day it loses 
-more or less the whole population 95.83\% (see Fig. \ref{fig:population-length}). Consequently it is very difficult for the
+more or less the whole population 95.83\% (see Figure \ref{fig:population-length}). Consequently it is very difficult for the
 algorithm to obtain a solution with a similar quality to the error-free scenario. 
 
 The second worst case of all the experiments is the \emph{entrfin} trace for the first period (Day 1). This trace loses more or less half of the
-population in the first 5 generations (see Fig. \ref{fig:population-length}), making really difficult to obtain a good
+population in the first 5 generations (see Figure \ref{fig:population-length}), making really difficult to obtain a good
 solution even though the population size is steady the rest of the generations. Thus, the obtained fitness for this period is not comparable to the error-free
 case.
 
@@ -951,7 +942,7 @@ real-world DGSs experience such large amount of failures, we attempt to address 
 the initial population size (a 10\%, 20\%, 30\%, 40\% and 50\%) and run the same simulations using the same traces. The aim
 is to compensate the loss of the system by providing more individuals at the first generation. 
 
-Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows the obtained results for Day 1 and Day 2 periods of the three traces with the
+Table \ref{tab:trap3-day1-day2-wilcoxon} shows the obtained results for Day 1 and Day 2 periods of the three traces with the
 increased population. For the \emph{entrfin} trace, the first period (Day 1) with a loss rate of 45.3\%, a 10\% extra
 individuals is enough to obtain solutions of similar quality to the error-free case. In the second period, Day 2, the trace obtains
 similar solutions to the error-free case and when adding an extra 50\% the obtained solution is even better than in the
@@ -973,7 +964,7 @@ quality of solutions when the failure rate is known.
 
 Up to now, we have only considered the worst-case scenario: lost resources never become available again. Nevertheless,
 real-world DG systems does not behave like this assumption, and thus we are going to use the traces with the possibility of
-re-acquiring the lost resources (see Fig. \ref{fig:trazas2}). Next section analyzes the results obtained when re-acquiring
+re-acquiring the lost resources (see Figure \ref{fig:trazas2}). Next section analyzes the results obtained when re-acquiring
 lost resources is a possibility.
 
 \subsubsection{3-trap:Results with churn}
@@ -992,15 +983,14 @@ On the other hand, due to the loss of resources, the population can be emptied b
 this situation occurs, the server node proceeds to the next generation by waiting the specified time $T$ (based on the required 
 time per generation in the failure-free environment) for new workers.
 
-Tab. \ref{tab:trap3-day1-day2-wilcoxon} shows the obtained results for the three traces with the host-churn phenomena
+Table \ref{tab:trap3-day1-day2-wilcoxon} shows the obtained results for the three traces with the host-churn phenomena
 (\emph{entrfin}, \emph{ucb} and \emph{xwtr}) and the previous corresponding two periods: Day 1 and Day 2. We used the same periods as in the
-worst-case scenario, but now choosing a random point in the 24-hours period as the starting point for the algorithm. Tab.
+worst-case scenario, but now choosing a random point in the 24-hours period as the starting point for the algorithm. Table
 \ref{tab:host-churn-data} shows the obtained fitness of the 3-Trap function problem and the host churn of each trace represented by the
 minimum, median, mean, maximum, and variance of the number of available worker nodes.
 
-\begin{table*}
-    \caption{Obtained fitness for 3-Trap function with host churn}
-\begin{center}
+\begin{table}[h]
+    \centering
     \begin{footnotesize}
     \begin{tabular}{|l|c|c|c|c|c|c|}
         \hline Trace                       & \multicolumn{5}{c|}{Hosts}                                 & \multicolumn{1}{c|}{Fitness} \\     
@@ -1015,15 +1005,14 @@ minimum, median, mean, maximum, and variance of the number of available worker n
         \hline     
 \end{tabular}     
 \end{footnotesize}
-\end{center}
-\label{tab:host-churn-data}
-\end{table*}
+    \caption{\label{tab:host-churn-data}Obtained fitness for 3-Trap function with host churn}
+\end{table}
 
 If the variance of the number of available hosts is zero, then the execution is obviously the same as in the error-free case because
 the number of hosts is steady along generations. 
 In this case, the obtained fitness should be similar to the error-free
 case. This situation is present within the second period (Day 2) of the \emph{xwtr} trace (variance equal to zero) and thus the obtained fitness is similar to the
-error-free case (see Tab. \ref{tab:trap3-day1-day2-wilcoxon}). The other period of the \emph{xwtr} trace has also a very small
+error-free case (see Table \ref{tab:trap3-day1-day2-wilcoxon}). The other period of the \emph{xwtr} trace has also a very small
 variance, 0.11, resulting in a similar solution quality in comparison with the error-free scenario. The \emph{entrfin} trace for both
 periods obtains solutions of similar quality to the error-free environment, even though the large variance observed in the
 Day 1 period ($s^2=305.59$). Despite the large variance, the number of available hosts is high in comparison with the other
